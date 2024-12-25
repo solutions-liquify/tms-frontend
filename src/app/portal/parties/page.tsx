@@ -52,6 +52,7 @@ export default function Parties() {
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead>Sr. No.</TableHead>
             <TableHead>Name</TableHead>
             <TableHead>Contact Number</TableHead>
             <TableHead>District</TableHead>
@@ -59,8 +60,9 @@ export default function Parties() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {partiesQuery.data?.map((party) => (
-            <TableRow key={party.id} onClick={() => router.push(`/portal/parties/${party.id}`)}>
+          {partiesQuery.data?.map((party, index) => (
+            <TableRow key={party.id} onClick={() => router.push(`/portal/parties/${party.id}`)} className="cursor-pointer">
+              <TableCell>{index + 1}</TableCell>
               <TableCell>{party.name}</TableCell>
               <TableCell>{party.contactNumber}</TableCell>
               <TableCell>{party.district}</TableCell>

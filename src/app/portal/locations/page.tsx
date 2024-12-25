@@ -52,6 +52,7 @@ export default function Locations() {
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead>Sr. No.</TableHead>
             <TableHead>Name</TableHead>
             <TableHead>Contact Number</TableHead>
             <TableHead>District</TableHead>
@@ -59,8 +60,9 @@ export default function Locations() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {locationsQuery.data?.map((location) => (
-            <TableRow key={location.id} onClick={() => router.push(`/portal/locations/${location.id}`)}>
+          {locationsQuery.data?.map((location, index) => (
+            <TableRow key={location.id} onClick={() => router.push(`/portal/locations/${location.id}`)} className="cursor-pointer">
+              <TableCell>{index + 1}</TableCell>
               <TableCell>{location.name}</TableCell>
               <TableCell>{location.contactNumber}</TableCell>
               <TableCell>{location.district}</TableCell>
