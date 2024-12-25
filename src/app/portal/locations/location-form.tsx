@@ -38,7 +38,7 @@ export default function LocationForm({ enableEdit, location }: LocationFormProps
   })
 
   const districtsQuery = useQuery<string[]>({
-    queryKey: ['districts'],
+    queryKey: ['districts', form.watch('state')],
     queryFn: () =>
       listDistricts({
         states: form.watch('state') ? [form.watch('state') as string] : [],
@@ -47,7 +47,7 @@ export default function LocationForm({ enableEdit, location }: LocationFormProps
   })
 
   const talukasQuery = useQuery<string[]>({
-    queryKey: ['talukas'],
+    queryKey: ['talukas', form.watch('state'), form.watch('district')],
     queryFn: () =>
       listTalukas({
         states: form.watch('state') ? [form.watch('state') as string] : [],
@@ -57,7 +57,7 @@ export default function LocationForm({ enableEdit, location }: LocationFormProps
   })
 
   const citiesQuery = useQuery<string[]>({
-    queryKey: ['cities'],
+    queryKey: ['cities', form.watch('state'), form.watch('district'), form.watch('taluka')],
     queryFn: () =>
       listCities({
         states: form.watch('state') ? [form.watch('state') as string] : [],
