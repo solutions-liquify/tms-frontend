@@ -8,8 +8,10 @@ import { TLocation } from '@/schemas/location-schema'
 import { useState } from 'react'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { useRouter } from 'next/navigation'
 
 export default function Locations() {
+  const router = useRouter()
   const [selectedStates, setSelectedStates] = useState<string[]>([])
   const [selectedDistricts, setSelectedDistricts] = useState<string[]>([])
   const [selectedTalukas, setSelectedTalukas] = useState<string[]>([])
@@ -58,7 +60,7 @@ export default function Locations() {
         </TableHeader>
         <TableBody>
           {locationsQuery.data?.map((location) => (
-            <TableRow key={location.id}>
+            <TableRow key={location.id} onClick={() => router.push(`/portal/locations/${location.id}`)}>
               <TableCell>{location.name}</TableCell>
               <TableCell>{location.contactNumber}</TableCell>
               <TableCell>{location.district}</TableCell>

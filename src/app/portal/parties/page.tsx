@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 import { listParties } from '@/lib/actions'
 import { TParty } from '@/schemas/party-schema'
@@ -10,6 +11,7 @@ import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
 export default function Parties() {
+  const router = useRouter()
   const [selectedStates, setSelectedStates] = useState<string[]>([])
   const [selectedDistricts, setSelectedDistricts] = useState<string[]>([])
   const [selectedTalukas, setSelectedTalukas] = useState<string[]>([])
@@ -58,7 +60,7 @@ export default function Parties() {
         </TableHeader>
         <TableBody>
           {partiesQuery.data?.map((party) => (
-            <TableRow key={party.id}>
+            <TableRow key={party.id} onClick={() => router.push(`/portal/parties/${party.id}`)}>
               <TableCell>{party.name}</TableCell>
               <TableCell>{party.contactNumber}</TableCell>
               <TableCell>{party.district}</TableCell>
