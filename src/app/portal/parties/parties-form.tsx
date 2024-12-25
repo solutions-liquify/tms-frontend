@@ -135,14 +135,22 @@ export default function PartyForm({ enableEdit, party }: PartyFormProps) {
         <form onSubmit={form.handleSubmit(onSubmit, onFormError)}>
           <div className="flex justify-between items-center">
             <p className="font-semibold">Party Details</p>
-            <div className="flex space-x-2">
-              <Button type="button" size="sm" disabled={isLoading} variant="ghost" onClick={() => router.back()}>
-                Cancel
+            {editMode && (
+              <div className="flex space-x-2">
+                <Button type="button" size="sm" disabled={isLoading} variant="ghost" onClick={() => router.back()}>
+                  Cancel
+                </Button>
+                <Button type="submit" size="sm" disabled={isLoading}>
+                  {isLoading ? 'Saving...' : 'Save'}
+                </Button>
+              </div>
+            )}
+
+            {!editMode && (
+              <Button type="button" disabled={isLoading} size="sm" onClick={() => setEditMode(true)}>
+                Edit
               </Button>
-              <Button type="submit" size="sm" disabled={isLoading}>
-                {isLoading ? 'Saving...' : 'Save'}
-              </Button>
-            </div>
+            )}
           </div>
 
           <Separator className="my-4" />
