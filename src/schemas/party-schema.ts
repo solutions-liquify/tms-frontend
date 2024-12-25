@@ -20,8 +20,8 @@ export type TParty = z.infer<typeof PartySchema>
 
 export type ListPartiesInput = {
   search?: string | null
-  state?: string | null
-  district?: string | null
-  taluka?: string | null
-  city?: string | null
+  states?: string[]
+  districts?: string[]
+  talukas?: string[]
+  cities?: string[]
 }

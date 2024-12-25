@@ -1,7 +1,41 @@
+'use client'
+
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import { useQuery } from '@tanstack/react-query'
+import { listParties } from '@/lib/actions'
+import { TParty } from '@/schemas/party-schema'
+import { useState } from 'react'
+import { Separator } from '@/components/ui/separator'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
 export default function Parties() {
+  const [selectedStates, setSelectedStates] = useState<string[]>([])
+  const [selectedDistricts, setSelectedDistricts] = useState<string[]>([])
+  const [selectedTalukas, setSelectedTalukas] = useState<string[]>([])
+  const [selectedCities, setSelectedCities] = useState<string[]>([])
+  const [search, setSearch] = useState<string>('')
+
+  const partiesQuery = useQuery<TParty[]>({
+    queryKey: ['parties'],
+    queryFn: () =>
+      listParties({
+        search: search,
+        states: selectedStates,
+        districts: selectedDistricts,
+        talukas: selectedTalukas,
+        cities: selectedCities,
+      }),
+  })
+
+  if (partiesQuery.isLoading) {
+    return <div>Loading...</div>
+  }
+
+  if (partiesQuery.isError) {
+    return <div>Error loading parties. Please try again later.</div>
+  }
+
   return (
     <div>
       <div className="flex justify-between items-center">
@@ -10,6 +44,29 @@ export default function Parties() {
           <Button size={'sm'}>Add</Button>
         </Link>
       </div>
+
+      <Separator className="my-4" />
+
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead>Contact Number</TableHead>
+            <TableHead>District</TableHead>
+            <TableHead>Taluka</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {partiesQuery.data?.map((party) => (
+            <TableRow key={party.id}>
+              <TableCell>{party.name}</TableCell>
+              <TableCell>{party.contactNumber}</TableCell>
+              <TableCell>{party.district}</TableCell>
+              <TableCell>{party.taluka}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   )
 }
