@@ -41,7 +41,7 @@ export default function Locations() {
   return (
     <div>
       <div className="flex justify-between items-center">
-        <p className="text-lg font-semibold">Locations</p>
+        <p className="text-muted-foreground">List of all your locations</p>
         <Link href="/portal/locations/create">
           <Button size={'sm'}>Add</Button>
         </Link>

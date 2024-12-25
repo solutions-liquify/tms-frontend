@@ -41,7 +41,7 @@ export default function Parties() {
   return (
     <div>
       <div className="flex justify-between items-center">
-        <p className="text-lg font-semibold">Parties</p>
+        <p className="text-muted-foreground">List of all your parties</p>
         <Link href="/portal/parties/create">
           <Button size={'sm'}>Add</Button>
         </Link>
