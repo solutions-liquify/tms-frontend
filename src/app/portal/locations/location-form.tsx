@@ -6,13 +6,14 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { LocationSchema } from '@/schemas/location-schema'
 import { Button } from '@/components/ui/button'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { toast } from 'sonner'
-import { createLocation, updateLocation } from '@/lib/actions'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { createLocation, listCities, listDistricts, listStates, listTalukas, updateLocation } from '@/lib/actions'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 interface LocationFormProps {
   location?: TLocation
@@ -28,6 +29,42 @@ export default function LocationForm({ enableEdit, location }: LocationFormProps
   const form = useForm<TLocation>({
     resolver: zodResolver(LocationSchema),
     defaultValues: location ?? {},
+  })
+
+  const statesQuery = useQuery<string[]>({
+    queryKey: ['states'],
+    queryFn: () => listStates(),
+    initialData: [],
+  })
+
+  const districtsQuery = useQuery<string[]>({
+    queryKey: ['districts'],
+    queryFn: () =>
+      listDistricts({
+        states: form.watch('state') ? [form.watch('state') as string] : [],
+      }),
+    initialData: [],
+  })
+
+  const talukasQuery = useQuery<string[]>({
+    queryKey: ['talukas'],
+    queryFn: () =>
+      listTalukas({
+        states: form.watch('state') ? [form.watch('state') as string] : [],
+        districts: form.watch('district') ? [form.watch('district') as string] : [],
+      }),
+    initialData: [],
+  })
+
+  const citiesQuery = useQuery<string[]>({
+    queryKey: ['cities'],
+    queryFn: () =>
+      listCities({
+        states: form.watch('state') ? [form.watch('state') as string] : [],
+        districts: form.watch('district') ? [form.watch('district') as string] : [],
+        talukas: form.watch('taluka') ? [form.watch('taluka') as string] : [],
+      }),
+    initialData: [],
   })
 
   const mutation = useMutation({
@@ -67,6 +104,30 @@ export default function LocationForm({ enableEdit, location }: LocationFormProps
 
   const onFormError = (errors: any) => {
     console.log(errors)
+  }
+
+  useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
+      if (name === 'state') {
+        form.unregister('district')
+        form.unregister('taluka')
+        form.unregister('city')
+      } else if (name === 'district') {
+        form.unregister('taluka')
+        form.unregister('city')
+      } else if (name === 'taluka') {
+        form.unregister('city')
+      }
+    })
+    return () => subscription.unsubscribe()
+  }, [form])
+
+  if (statesQuery.isLoading || districtsQuery.isLoading || talukasQuery.isLoading || citiesQuery.isLoading) {
+    return <div>Loading...</div>
+  }
+
+  if (statesQuery.isError || districtsQuery.isError || talukasQuery.isError || citiesQuery.isError) {
+    return <div>Error loading data. Please try again later.</div>
   }
 
   return (
@@ -166,6 +227,7 @@ export default function LocationForm({ enableEdit, location }: LocationFormProps
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="state"
@@ -173,12 +235,24 @@ export default function LocationForm({ enableEdit, location }: LocationFormProps
                 <FormItem>
                   <FormLabel>State</FormLabel>
                   <FormControl>
-                    <Input {...field} value={field.value ?? ''} disabled={isLoading || !editMode} />
+                    <Select {...field} disabled={isLoading || !editMode} onValueChange={field.onChange} value={field.value ?? ''}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a state" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {statesQuery.data?.map((state) => (
+                          <SelectItem key={state} value={state}>
+                            {state}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="district"
@@ -186,7 +260,18 @@ export default function LocationForm({ enableEdit, location }: LocationFormProps
                 <FormItem>
                   <FormLabel>District</FormLabel>
                   <FormControl>
-                    <Input {...field} value={field.value ?? ''} disabled={isLoading || !editMode} />
+                    <Select {...field} disabled={isLoading || !editMode} onValueChange={field.onChange} value={field.value ?? ''}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a district" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {districtsQuery.data?.map((district) => (
+                          <SelectItem key={district} value={district}>
+                            {district}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -199,12 +284,24 @@ export default function LocationForm({ enableEdit, location }: LocationFormProps
                 <FormItem>
                   <FormLabel>Taluka</FormLabel>
                   <FormControl>
-                    <Input {...field} value={field.value ?? ''} disabled={isLoading || !editMode} />
+                    <Select {...field} disabled={isLoading || !editMode} onValueChange={field.onChange} value={field.value ?? ''}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a taluka" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {talukasQuery.data?.map((taluka) => (
+                          <SelectItem key={taluka} value={taluka}>
+                            {taluka}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="city"
@@ -212,12 +309,24 @@ export default function LocationForm({ enableEdit, location }: LocationFormProps
                 <FormItem>
                   <FormLabel>City</FormLabel>
                   <FormControl>
-                    <Input {...field} value={field.value ?? ''} disabled={isLoading || !editMode} />
+                    <Select {...field} disabled={isLoading || !editMode} onValueChange={field.onChange} value={field.value ?? ''}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a city" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {citiesQuery.data?.map((city) => (
+                          <SelectItem key={city} value={city}>
+                            {city}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="pincode"
