@@ -1,3 +1,3 @@
 export default function Parties() {
-  return <div>Parties</div>;
+  return <div className='bg-gray-100 w-full'>Parties</div>;
 }

@@ -1,5 +1,8 @@
-import { Home, MapPin, Package, Users2 } from "lucide-react";
+"use client";
 
+import { Home, Inbox, MapPin, Users2 } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   Sidebar,
   SidebarContent,
@@ -9,11 +12,11 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarRail,
 } from "@/components/ui/sidebar";
-import Link from "next/link";
 
 // Menu items.
-const items = [
+export const items = [
   {
     title: "Dashboard",
     url: "/portal/dashboard",
@@ -22,7 +25,7 @@ const items = [
   {
     title: "Delivery Orders",
     url: "/portal/delivery-orders",
-    icon: Package,
+    icon: Inbox,
   },
   {
     title: "Locations",
@@ -37,6 +40,8 @@ const items = [
 ];
 
 export function AppSidebar() {
+  const pathname = usePathname();
+
   return (
     <Sidebar>
       <SidebarContent>
@@ -46,7 +51,10 @@ export function AppSidebar() {
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith(item.url)}
+                  >
                     <Link href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
@@ -58,6 +66,7 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarRail />
     </Sidebar>
   );
 }
