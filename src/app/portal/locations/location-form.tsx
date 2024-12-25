@@ -107,20 +107,19 @@ export default function LocationForm({ enableEdit, location }: LocationFormProps
   }
 
   useEffect(() => {
-    const subscription = form.watch((value, { name }) => {
-      if (name === 'state') {
-        form.unregister('district')
-        form.unregister('taluka')
-        form.unregister('city')
-      } else if (name === 'district') {
-        form.unregister('taluka')
-        form.unregister('city')
-      } else if (name === 'taluka') {
-        form.unregister('city')
-      }
-    })
-    return () => subscription.unsubscribe()
-  }, [form])
+    form.unregister('district')
+    form.unregister('taluka')
+    form.unregister('city')
+  }, [form.watch('state')])
+
+  useEffect(() => {
+    form.unregister('taluka')
+    form.unregister('city')
+  }, [form.watch('district')])
+
+  useEffect(() => {
+    form.unregister('city')
+  }, [form.watch('taluka')])
 
   if (statesQuery.isLoading || districtsQuery.isLoading || talukasQuery.isLoading || citiesQuery.isLoading) {
     return <div>Loading...</div>
