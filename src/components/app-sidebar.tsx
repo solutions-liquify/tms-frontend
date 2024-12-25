@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, Inbox, MapPin, Users2 } from "lucide-react";
+import { Home, MapPin, Package, Users2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -25,7 +25,7 @@ export const items = [
   {
     title: "Delivery Orders",
     url: "/portal/delivery-orders",
-    icon: Inbox,
+    icon: Package,
   },
   {
     title: "Locations",
