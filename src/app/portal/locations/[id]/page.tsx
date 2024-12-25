@@ -1,22 +1,24 @@
 'use client'
 
+import React from 'react'
 import LocationForm from '@/app/portal/locations/location-form'
 import { useQuery } from '@tanstack/react-query'
 import { getLocation } from '@/lib/actions'
 import { TLocation } from '@/schemas/location-schema'
 
 interface ILocationPageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export default function LocationPage({ params }: ILocationPageProps) {
+  const unwrappedParams = React.use(params)
   const locationQuery = useQuery<TLocation>({
-    queryKey: ['location', params.id],
-    queryFn: () => getLocation(params.id),
+    queryKey: ['location', unwrappedParams.id],
+    queryFn: () => getLocation(unwrappedParams.id),
     initialData: undefined,
-    enabled: !!params.id,
+    enabled: !!unwrappedParams.id,
   })
 
   if (locationQuery.isLoading) {
