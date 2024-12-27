@@ -1,18 +1,17 @@
 'use client'
 
-import { TMaterial } from '@/schemas/material-schema'
-import { useRouter } from 'next/navigation'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { MaterialSchema } from '@/schemas/material-schema'
 import { Button } from '@/components/ui/button'
-import { useEffect, useState } from 'react'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
-import { toast } from 'sonner'
 import { createMaterial, updateMaterial } from '@/lib/actions'
+import { MaterialSchema, TMaterial } from '@/schemas/material-schema'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 
 interface MaterialFormProps {
   material?: TMaterial
@@ -74,7 +73,7 @@ export default function MaterialForm({ enableEdit, material }: MaterialFormProps
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit, onFormError)}>
           <div className="flex justify-between items-center">
-            <p className="font-semibold">Material Details</p>
+            <p className="text-muted-foreground">Types of materials that are used in the supply chain.</p>
             {editMode && (
               <div className="flex space-x-2">
                 <Button type="button" size="sm" disabled={isLoading} variant="ghost" onClick={() => router.back()}>
