@@ -52,3 +52,7 @@ export const DeliveryOrderSchema = z.object({
   updatedAt: z.number().optional().nullable(),
   deliveryOrderSections: z.array(DeliveryOrderSectionSchema).optional().nullable(),
 })
+
+export type TDeliveryOrder = z.infer<typeof DeliveryOrderSchema>
+export type TDeliveryOrderSection = z.infer<typeof DeliveryOrderSectionSchema>
+export type TDeliveryOrderItem = z.infer<typeof DeliveryOrderItemSchema>

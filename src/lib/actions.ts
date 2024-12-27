@@ -8,6 +8,7 @@ import { TMaterial } from '@/schemas/material-schema'
 import { ListEmployeesInput, TEmployee } from '@/schemas/employee-schema'
 import { TLogin } from '@/schemas/auth-schema'
 import { authService } from '@/lib/auth'
+import { TDeliveryOrder } from '@/schemas/delivery-order-schema'
 
 // Godown Location API
 export const createLocation = async (data: TLocation) => {
@@ -226,5 +227,36 @@ export const login = async (data: TLogin) => {
 
 export const getNewAccessToken = async (accessToken: string, refreshToken: string) => {
   const response = await axios.post(`${getBackendUrl()}/api/v1/auth/refresh`, { accessToken, refreshToken })
+  return response.data
+}
+
+// Delivery Order API
+export const createDeliveryOrder = async (data: TDeliveryOrder) => {
+  const accessToken = authService.getAccessToken()
+  const response = await axios.post(`${getBackendUrl()}/api/v1/delivery-orders/create`, data, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
+  return response.data
+}
+
+export const updateDeliveryOrder = async (data: TDeliveryOrder) => {
+  const accessToken = authService.getAccessToken()
+  const response = await axios.post(`${getBackendUrl()}/api/v1/delivery-orders/update`, data, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
+  return response.data
+}
+
+export const getDeliveryOrder = async (id: string) => {
+  const accessToken = authService.getAccessToken()
+  const response = await axios.get(`${getBackendUrl()}/api/v1/delivery-orders/get/${id}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
   return response.data
 }
