@@ -1,7 +1,4 @@
 import * as z from 'zod'
-import { PartySchema } from './party-schema'
-import { LocationSchema } from './location-schema'
-import { MaterialSchema } from './material-schema'
 
 export const DeliveryOrderItemSchema = z.object({
   id: z.string().optional().nullable(),
@@ -11,8 +8,8 @@ export const DeliveryOrderItemSchema = z.object({
   district: z.string().nullable().optional(),
   taluka: z.string().nullable().optional(),
   city: z.string().nullable().optional(),
-  location: LocationSchema,
-  material: MaterialSchema,
+  locationId: z.string().optional().nullable(),
+  materialId: z.string().optional().nullable(),
   quantity: z.number(),
   pendingQuantity: z.number(),
   deliveredQuantity: z.number(),
@@ -41,7 +38,7 @@ export const DeliveryOrderSectionSchema = z.object({
 export const DeliveryOrderSchema = z.object({
   id: z.string().optional().nullable(),
   contractId: z.string().optional().nullable(),
-  party: PartySchema,
+  partyId: z.string().optional().nullable(),
   dateOfContract: z.number().optional().nullable(),
   status: z.string(),
   grandTotalQuantity: z.number(),
