@@ -5,6 +5,8 @@ import { MaterialSchema } from './material-schema'
 
 export const DeliveryOrderItemSchema = z.object({
   id: z.string().optional().nullable(),
+  deliveryOrderId: z.string().optional().nullable(),
+  deliverySectionId: z.string().optional().nullable(),
   state: z.string().nullable().optional(),
   district: z.string().nullable().optional(),
   taluka: z.string().nullable().optional(),
@@ -24,6 +26,7 @@ export const DeliveryOrderItemSchema = z.object({
 
 export const DeliveryOrderSectionSchema = z.object({
   id: z.string().optional().nullable(),
+  deliveryOrderId: z.string().optional().nullable(),
   state: z.string().nullable().optional(),
   district: z.string().nullable().optional(),
   totalQuantity: z.number(),
