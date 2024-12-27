@@ -223,3 +223,8 @@ export const login = async (data: TLogin) => {
   const response = await axios.post(`${getBackendUrl()}/api/v1/auth/login`, data)
   return response.data
 }
+
+export const getNewAccessToken = async (accessToken: string, refreshToken: string) => {
+  const response = await axios.post(`${getBackendUrl()}/api/v1/auth/refresh`, { accessToken, refreshToken })
+  return response.data
+}
