@@ -1,8 +1,8 @@
-"use client";
+'use client'
 
-import { Home, MapPin, Package, Users2 } from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Home, MapPin, Package, Users2 } from 'lucide-react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import {
   Sidebar,
   SidebarContent,
@@ -13,34 +13,39 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "@/components/ui/sidebar";
+} from '@/components/ui/sidebar'
 
 // Menu items.
 export const items = [
   {
-    title: "Dashboard",
-    url: "/portal/dashboard",
+    title: 'Dashboard',
+    url: '/portal/dashboard',
     icon: Home,
   },
   {
-    title: "Delivery Orders",
-    url: "/portal/delivery-orders",
+    title: 'Delivery Orders',
+    url: '/portal/delivery-orders',
     icon: Package,
   },
   {
-    title: "Locations",
-    url: "/portal/locations",
+    title: 'Locations',
+    url: '/portal/locations',
     icon: MapPin,
   },
   {
-    title: "Parties",
-    url: "/portal/parties",
+    title: 'Parties',
+    url: '/portal/parties',
     icon: Users2,
   },
-];
+  {
+    title: 'Materials',
+    url: '/portal/materials',
+    icon: Package,
+  },
+]
 
 export function AppSidebar() {
-  const pathname = usePathname();
+  const pathname = usePathname()
 
   return (
     <Sidebar>
@@ -51,10 +56,7 @@ export function AppSidebar() {
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname.startsWith(item.url)}
-                  >
+                  <SidebarMenuButton asChild isActive={pathname.startsWith(item.url)}>
                     <Link href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
@@ -68,5 +70,5 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarRail />
     </Sidebar>
-  );
+  )
 }

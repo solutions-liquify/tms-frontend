@@ -4,6 +4,7 @@ import { ListPartiesInput, TParty } from '@/schemas/party-schema'
 import axios from 'axios'
 import { getBackendUrl } from './utils'
 import { ListCitiesInput, ListDistrictsInput, ListTalukasInput } from '@/schemas/state-district-taluka-city-schema'
+import { TMaterial } from '@/schemas/material-schema'
 
 // Godown Location API
 export const createLocation = async (data: TLocation) => {
@@ -69,5 +70,26 @@ export const listTalukas = async (data: ListTalukasInput) => {
 // Location2 City
 export const listCities = async (data: ListCitiesInput) => {
   const response = await axios.post(`${getBackendUrl()}/api/v1/cities/list`, data)
+  return response.data
+}
+
+// Material API
+export const listMaterials = async () => {
+  const response = await axios.get(`${getBackendUrl()}/api/v1/materials/list`)
+  return response.data
+}
+
+export const createMaterial = async (data: TMaterial) => {
+  const response = await axios.post(`${getBackendUrl()}/api/v1/materials/create`, data)
+  return response.data
+}
+
+export const updateMaterial = async (data: TMaterial) => {
+  const response = await axios.post(`${getBackendUrl()}/api/v1/materials/update`, data)
+  return response.data
+}
+
+export const getMaterial = async (id: string) => {
+  const response = await axios.get(`${getBackendUrl()}/api/v1/materials/get/${id}`)
   return response.data
 }
