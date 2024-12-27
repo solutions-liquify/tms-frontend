@@ -1,35 +1,27 @@
-import Link from "next/link";
+import LoginForm from '@/components/login-form'
+import { GalleryVerticalEnd } from 'lucide-react'
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className='flex flex-col items-center justify-center h-screen'>
-      <h1 className='text-2xl font-bold'>Go to Page: </h1>
-      <div className='grid grid-cols-1 gap-2'>
-        <Link
-          href='/portal/dashboard'
-          className='bg-blue-500 text-white p-2 rounded-md'
-        >
-          Dashboard
-        </Link>
-        <Link
-          href='/portal/do'
-          className='bg-blue-500 text-white p-2 rounded-md'
-        >
-          Delivery Orders
-        </Link>
-        <Link
-          href='/portal/locations'
-          className='bg-blue-500 text-white p-2 rounded-md'
-        >
-          Locations
-        </Link>
-        <Link
-          href='/portal/parties'
-          className='bg-blue-500 text-white p-2 rounded-md'
-        >
-          Parties
-        </Link>
+    <div className="grid min-h-svh lg:grid-cols-2">
+      <div className="flex flex-col gap-4 p-6 md:p-10">
+        <div className="flex justify-center gap-2 md:justify-start">
+          <a href="#" className="flex items-center gap-2 font-medium">
+            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
+              <GalleryVerticalEnd className="size-4" />
+            </div>
+            TMS Portal
+          </a>
+        </div>
+        <div className="flex flex-1 items-center justify-center">
+          <div className="w-full max-w-xs">
+            <LoginForm />
+          </div>
+        </div>
+      </div>
+      <div className="relative hidden bg-muted lg:block">
+        <img src="/placeholder.svg" alt="Image" className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale" />
       </div>
     </div>
-  );
+  )
 }
