@@ -6,6 +6,8 @@ import { getBackendUrl } from './utils'
 import { ListCitiesInput, ListDistrictsInput, ListTalukasInput } from '@/schemas/state-district-taluka-city-schema'
 import { TMaterial } from '@/schemas/material-schema'
 import { ListEmployeesInput, TEmployee } from '@/schemas/employee-schema'
+import { TLogin } from '@/schemas/auth-schema'
+import { authService } from '@/lib/auth'
 
 // Godown Location API
 export const createLocation = async (data: TLocation) => {
@@ -41,7 +43,12 @@ export const updateParty = async (data: TParty) => {
 }
 
 export const listParties = async (data: ListPartiesInput) => {
-  const response = await axios.post(`${getBackendUrl()}/api/v1/parties/list`, data)
+  const accessToken = authService.getAccessToken()
+  const response = await axios.post(`${getBackendUrl()}/api/v1/parties/list`, data, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
   return response.data
 }
 
@@ -107,11 +114,23 @@ export const updateEmployee = async (data: TEmployee) => {
 }
 
 export const listEmployees = async (data: ListEmployeesInput) => {
-  const response = await axios.post(`${getBackendUrl()}/api/v1/employees/list`, data)
+  const accessToken = authService.getAccessToken()
+  console.log(accessToken)
+  const response = await axios.post(`${getBackendUrl()}/api/v1/employees/list`, data, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
   return response.data
 }
 
 export const getEmployee = async (id: string) => {
   const response = await axios.get(`${getBackendUrl()}/api/v1/employees/get/${id}`)
+  return response.data
+}
+
+// Auth API
+export const login = async (data: TLogin) => {
+  const response = await axios.post(`${getBackendUrl()}/api/v1/auth/login`, data)
   return response.data
 }

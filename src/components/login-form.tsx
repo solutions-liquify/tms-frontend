@@ -8,16 +8,30 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
+import { useState } from 'react'
+import { login } from '@/lib/actions'
+import { authService } from '@/lib/auth'
+import { Loader2 } from 'lucide-react'
 
 export default function LoginForm() {
   const router = useRouter()
+  const [isLoading, setIsLoading] = useState(false)
   const form = useForm<TLogin>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {},
   })
 
-  const onSubmit = (data: TLogin) => {
-    console.log(data)
+  const onSubmit = async (data: TLogin) => {
+    try {
+      setIsLoading(true)
+      const res = await login(data)
+      authService.setTokens(res)
+      router.push('/portal/dashboard')
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -35,7 +49,7 @@ export default function LoginForm() {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input {...field} value={field.value ?? ''} type="email" />
+                  <Input {...field} value={field.value ?? ''} type="email" disabled={isLoading} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -49,13 +63,14 @@ export default function LoginForm() {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input {...field} value={field.value ?? ''} type="password" />
+                  <Input {...field} value={field.value ?? ''} type="password" disabled={isLoading} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full">
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
             Login
           </Button>
         </div>
