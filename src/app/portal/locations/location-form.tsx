@@ -134,7 +134,7 @@ export default function LocationForm({ enableEdit, location }: LocationFormProps
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit, onFormError)}>
           <div className="flex justify-between items-center">
-            <p className="text-muted-foreground">Location are the godowns/warehouses where the materials are stored.</p>
+            <p className="text-muted-foreground text-sm">Location are the godowns/warehouses where the materials are stored.</p>
 
             {editMode && (
               <div className="flex space-x-2">
@@ -154,7 +154,7 @@ export default function LocationForm({ enableEdit, location }: LocationFormProps
             )}
           </div>
 
-          <Separator className="my-4" />
+          <div className="my-4" />
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <FormField

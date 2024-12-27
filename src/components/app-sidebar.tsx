@@ -28,6 +28,9 @@ export const items = [
     url: '/portal/delivery-orders',
     icon: Package,
   },
+]
+
+export const metaDataItems = [
   {
     title: 'Locations',
     url: '/portal/locations',
@@ -72,6 +75,23 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild isActive={pathname.startsWith(item.url)}>
+                    <Link href={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Metadata</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {metaDataItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={pathname.startsWith(item.url)}>
                     <Link href={item.url}>

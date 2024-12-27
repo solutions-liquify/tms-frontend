@@ -1,5 +1,5 @@
 'use client'
-import { AppSidebar, items } from '@/components/app-sidebar'
+import { AppSidebar, items, metaDataItems } from '@/components/app-sidebar'
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { usePathname } from 'next/navigation'
@@ -29,7 +29,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 if (pathname === '/portal/delivery-orders/create') return 'Create Delivery Order'
                 if (pathname.startsWith('/portal/delivery-orders/')) return 'Delivery Order'
                 if (pathname === '/portal/dashboard') return 'Dashboard'
-                return items.find((item) => pathname.startsWith(item.url))?.title
+                return [...items, ...metaDataItems].find((item) => pathname.startsWith(item.url))?.title
               })()}
             </h1>
           </header>
