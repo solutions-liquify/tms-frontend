@@ -1,6 +1,6 @@
 'use client'
 
-import { GalleryVerticalEnd, Home, MapPin, Package, Users2 } from 'lucide-react'
+import { GalleryVerticalEnd, Home, MapPin, Package, Package2, User, Users2 } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
@@ -26,7 +26,7 @@ export const items = [
   {
     title: 'Delivery Orders',
     url: '/portal/delivery-orders',
-    icon: Package,
+    icon: Package2,
   },
 ]
 
@@ -45,6 +45,11 @@ export const metaDataItems = [
     title: 'Materials',
     url: '/portal/materials',
     icon: Package,
+  },
+  {
+    title: 'Employees',
+    url: '/portal/employees',
+    icon: User,
   },
 ]
 

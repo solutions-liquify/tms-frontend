@@ -5,6 +5,7 @@ import axios from 'axios'
 import { getBackendUrl } from './utils'
 import { ListCitiesInput, ListDistrictsInput, ListTalukasInput } from '@/schemas/state-district-taluka-city-schema'
 import { TMaterial } from '@/schemas/material-schema'
+import { ListEmployeesInput, TEmployee } from '@/schemas/employee-schema'
 
 // Godown Location API
 export const createLocation = async (data: TLocation) => {
@@ -91,5 +92,26 @@ export const updateMaterial = async (data: TMaterial) => {
 
 export const getMaterial = async (id: string) => {
   const response = await axios.get(`${getBackendUrl()}/api/v1/materials/get/${id}`)
+  return response.data
+}
+
+// Employee API
+export const createEmployee = async (data: TEmployee) => {
+  const response = await axios.post(`${getBackendUrl()}/api/v1/employees/create`, data)
+  return response.data
+}
+
+export const updateEmployee = async (data: TEmployee) => {
+  const response = await axios.post(`${getBackendUrl()}/api/v1/employees/update`, data)
+  return response.data
+}
+
+export const listEmployees = async (data: ListEmployeesInput) => {
+  const response = await axios.post(`${getBackendUrl()}/api/v1/employees/list`, data)
+  return response.data
+}
+
+export const getEmployee = async (id: string) => {
+  const response = await axios.get(`${getBackendUrl()}/api/v1/employees/get/${id}`)
   return response.data
 }

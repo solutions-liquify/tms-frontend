@@ -134,7 +134,7 @@ export default function PartyForm({ enableEdit, party }: PartyFormProps) {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit, onFormError)}>
           <div className="flex justify-between items-center">
-            <p className="text-muted-foreground">Information about the party that will be sending/receiving the materials.</p>
+            <p className="text-muted-foreground text-sm">Information about the party that will be sending/receiving the materials.</p>
             {editMode && (
               <div className="flex space-x-2">
                 <Button type="button" size="sm" disabled={isLoading} variant="ghost" onClick={() => router.back()}>
@@ -153,7 +153,7 @@ export default function PartyForm({ enableEdit, party }: PartyFormProps) {
             )}
           </div>
 
-          <Separator className="my-4" />
+          <div className="my-4" />
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <FormField
