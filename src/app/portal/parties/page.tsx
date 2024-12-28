@@ -41,19 +41,19 @@ export default function Parties() {
   return (
     <div>
       <div className="flex justify-between items-center">
-        <p className="text-muted-foreground">List of all your parties</p>
+        <p className="text-muted-foreground text-sm">List of all your parties</p>
         <Link href="/portal/parties/create">
           <Button size={'sm'}>Add</Button>
         </Link>
       </div>
 
-      <Separator className="my-4" />
+      <div className="my-4" />
 
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Sr. No.</TableHead>
-            <TableHead>Name</TableHead>
+            <TableHead className="w-1/3">Name</TableHead>
             <TableHead>Contact Number</TableHead>
             <TableHead>District</TableHead>
             <TableHead>Taluka</TableHead>

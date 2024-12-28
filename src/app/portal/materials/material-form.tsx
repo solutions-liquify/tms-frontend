@@ -72,7 +72,7 @@ export default function MaterialForm({ enableEdit, material }: MaterialFormProps
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit, onFormError)}>
           <div className="flex justify-between items-center">
-            <p className="text-muted-foreground text-sm">Types of materials that are used in the supply chain.</p>
+            <p className="text-muted-foreground text-sm">Type of material that is used in the supply chain.</p>
             {editMode && (
               <div className="flex space-x-2">
                 <Button type="button" size="sm" disabled={isLoading} variant="ghost" onClick={() => router.back()}>

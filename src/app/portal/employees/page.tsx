@@ -33,19 +33,19 @@ export default function Employees() {
   return (
     <div>
       <div className="flex justify-between items-center">
-        <p className="text-muted-foreground">List of all your employees</p>
+        <p className="text-muted-foreground text-sm">List of all your employees</p>
         <Link href="/portal/employees/create">
           <Button size={'sm'}>Add</Button>
         </Link>
       </div>
 
-      <Separator className="my-4" />
+      <div className="my-4" />
 
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Sr. No.</TableHead>
-            <TableHead>Name</TableHead>
+            <TableHead className="w-1/3">Name</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Contact Number</TableHead>
             <TableHead>Roles</TableHead>
@@ -55,10 +55,10 @@ export default function Employees() {
           {employeesQuery.data?.map((employee, index) => (
             <TableRow key={employee.id} onClick={() => router.push(`/portal/employees/${employee.id}`)} className="cursor-pointer">
               <TableCell>{index + 1}</TableCell>
-              <TableCell>{employee.name}</TableCell>
+              <TableCell className="capitalize">{employee.name.toLowerCase()}</TableCell>
               <TableCell>{employee.email}</TableCell>
               <TableCell>{employee.contactNumber}</TableCell>
-              <TableCell>{employee.roles?.join(', ')}</TableCell>
+              <TableCell className="capitalize">{employee.role?.toLowerCase()}</TableCell>
             </TableRow>
           ))}
         </TableBody>

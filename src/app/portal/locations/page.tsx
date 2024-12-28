@@ -41,19 +41,19 @@ export default function Locations() {
   return (
     <div>
       <div className="flex justify-between items-center">
-        <p className="text-muted-foreground">List of all your locations</p>
+        <p className="text-muted-foreground text-sm">List of all your locations</p>
         <Link href="/portal/locations/create">
           <Button size={'sm'}>Add</Button>
         </Link>
       </div>
 
-      <Separator className="my-4" />
+      <div className="my-4" />
 
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Sr. No.</TableHead>
-            <TableHead>Name</TableHead>
+            <TableHead className="w-1/3">Name</TableHead>
             <TableHead>Contact Number</TableHead>
             <TableHead>District</TableHead>
             <TableHead>Taluka</TableHead>

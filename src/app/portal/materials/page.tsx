@@ -30,19 +30,19 @@ export default function Materials() {
   return (
     <div>
       <div className="flex justify-between items-center">
-        <p className="text-muted-foreground">List of all your materials</p>
+        <p className="text-muted-foreground text-sm">List of all your materials</p>
         <Link href="/portal/materials/create">
           <Button size={'sm'}>Add</Button>
         </Link>
       </div>
 
-      <Separator className="my-4" />
+      <div className="my-4" />
 
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Sr. No.</TableHead>
-            <TableHead>Name</TableHead>
+            <TableHead className="w-5/6">Name</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
