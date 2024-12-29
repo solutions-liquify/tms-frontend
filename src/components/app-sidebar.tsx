@@ -1,11 +1,12 @@
 'use client'
 
-import { GalleryVerticalEnd, Home, MapPin, Package, Package2, User, Users2 } from 'lucide-react'
+import { GalleryVerticalEnd, Home, MapPin, Package, Package2, User, Users2, LogOut } from 'lucide-react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { redirect, usePathname } from 'next/navigation'
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -15,6 +16,8 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from '@/components/ui/sidebar'
+import { Button } from '@/components/ui/button'
+import { authService } from '@/lib/auth'
 
 // Menu items.
 export const items = [
@@ -110,6 +113,18 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <Button
+          variant="outline"
+          onClick={() => {
+            authService.clearTokens()
+            redirect('/')
+          }}
+        >
+          Logout
+          <LogOut className="size-4" />
+        </Button>
+      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   )

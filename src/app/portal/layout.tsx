@@ -2,10 +2,15 @@
 import { AppSidebar, items, metaDataItems } from '@/components/app-sidebar'
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
+import { authService } from '@/lib/auth'
 import { usePathname } from 'next/navigation'
-
+import { redirect } from 'next/navigation'
 export default function Layout({ children }: { children: React.ReactNode }) {
+  const accessToken = authService.getAccessToken()
   const pathname = usePathname()
+  if (!accessToken) {
+    return redirect('/')
+  }
   return (
     <SidebarProvider>
       <AppSidebar />
