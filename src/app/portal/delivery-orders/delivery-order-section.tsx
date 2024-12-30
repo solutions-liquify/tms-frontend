@@ -10,6 +10,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Trash2Icon } from 'lucide-react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import DeliveryOrderItem from './delivery-order-item'
+import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
 interface DeliveryOrderSectionProps {
   section: TDeliveryOrderSection
@@ -35,6 +36,7 @@ export default function DeliveryOrderSection({ section, index, removeSection, is
 
   const addItem = () => {
     append({
+      id: null,
       deliveryOrderId: '',
       district: section.district ?? '',
       taluka: '',
@@ -47,7 +49,7 @@ export default function DeliveryOrderSection({ section, index, removeSection, is
       rate: 0,
       unit: '',
       dueDate: 0,
-      status: '',
+      status: 'pending',
     })
   }
 
@@ -91,17 +93,32 @@ export default function DeliveryOrderSection({ section, index, removeSection, is
       <div className="my-4" />
 
       <div>
-        {fields.map((item, itemIndex) => (
-          <DeliveryOrderItem
-            key={itemIndex}
-            item={item}
-            index={itemIndex}
-            removeItem={() => remove(itemIndex)}
-            isLoading={isLoading}
-            editMode={editMode}
-            sectionIndex={index}
-          />
-        ))}
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="">#</TableHead>
+              <TableHead className="w-1/6">Taluka</TableHead>
+              <TableHead className="w-1/6">Location</TableHead>
+              <TableHead className="w-1/6">Material</TableHead>
+              <TableHead className="w-1/6">Quantity</TableHead>
+              <TableHead className="w-1/6">Rate</TableHead>
+              <TableHead></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {fields.map((field, itemIndex) => (
+              <DeliveryOrderItem
+                key={field.id}
+                item={field as any}
+                index={itemIndex}
+                removeItem={() => remove(itemIndex)}
+                isLoading={isLoading}
+                editMode={editMode}
+                sectionIndex={index}
+              />
+            ))}
+          </TableBody>
+        </Table>
         <Button type="button" onClick={addItem} disabled={isLoading || !editMode} variant="outline">
           Add Item
         </Button>
