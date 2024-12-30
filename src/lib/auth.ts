@@ -1,3 +1,6 @@
+import { redirect } from 'next/navigation'
+import { refreshUserToken } from './actions'
+
 interface AuthTokens {
   accessToken: string
   refreshToken: string
@@ -9,8 +12,37 @@ export const authService = {
     localStorage.setItem('refreshToken', tokens.refreshToken)
   },
 
-  getAccessToken() {
-    return localStorage.getItem('accessToken')
+  isTokenExpired(token: string) {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]))
+      const expiry = payload.exp * 1000
+      return Date.now() > expiry
+    } catch {
+      return true
+    }
+  },
+
+  async getAccessToken() {
+    const accessToken = localStorage.getItem('accessToken')
+    if (accessToken && !this.isTokenExpired(accessToken)) {
+      return accessToken
+    } else {
+      console.log('accessToken expired')
+    }
+
+    try {
+      const refreshToken = this.getRefreshToken()
+      if (refreshToken) {
+        const newTokens = await refreshUserToken({ refreshToken })
+        this.setTokens(newTokens)
+        return newTokens.accessToken
+      }
+    } catch {
+      this.clearTokens()
+      redirect('/')
+    }
+
+    return null
   },
 
   getRefreshToken() {

@@ -12,7 +12,7 @@ import { TDeliveryOrder } from '@/schemas/delivery-order-schema'
 
 // Godown Location API
 export const createLocation = async (data: TLocation) => {
-  const accessToken = authService.getAccessToken()
+  const accessToken = await authService.getAccessToken()
   const response = await axios.post(`${getBackendUrl()}/api/v1/locations/create`, data, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -22,7 +22,7 @@ export const createLocation = async (data: TLocation) => {
 }
 
 export const updateLocation = async (data: TLocation) => {
-  const accessToken = authService.getAccessToken()
+  const accessToken = await authService.getAccessToken()
   const response = await axios.post(`${getBackendUrl()}/api/v1/locations/update`, data, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -32,7 +32,7 @@ export const updateLocation = async (data: TLocation) => {
 }
 
 export const listLocations = async (data: ListLocationsInput) => {
-  const accessToken = authService.getAccessToken()
+  const accessToken = await authService.getAccessToken()
   const response = await axios.post(`${getBackendUrl()}/api/v1/locations/list`, data, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -42,7 +42,7 @@ export const listLocations = async (data: ListLocationsInput) => {
 }
 
 export const getLocation = async (id: string) => {
-  const accessToken = authService.getAccessToken()
+  const accessToken = await authService.getAccessToken()
   const response = await axios.get(`${getBackendUrl()}/api/v1/locations/get/${id}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -54,7 +54,7 @@ export const getLocation = async (id: string) => {
 // Party API
 
 export const createParty = async (data: TParty) => {
-  const accessToken = authService.getAccessToken()
+  const accessToken = await authService.getAccessToken()
   const response = await axios.post(`${getBackendUrl()}/api/v1/parties/create`, data, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -64,7 +64,7 @@ export const createParty = async (data: TParty) => {
 }
 
 export const updateParty = async (data: TParty) => {
-  const accessToken = authService.getAccessToken()
+  const accessToken = await authService.getAccessToken()
   const response = await axios.post(`${getBackendUrl()}/api/v1/parties/update`, data, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -74,7 +74,7 @@ export const updateParty = async (data: TParty) => {
 }
 
 export const listParties = async (data: ListPartiesInput) => {
-  const accessToken = authService.getAccessToken()
+  const accessToken = await authService.getAccessToken()
   const response = await axios.post(`${getBackendUrl()}/api/v1/parties/list`, data, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -84,7 +84,7 @@ export const listParties = async (data: ListPartiesInput) => {
 }
 
 export const getParty = async (id: string) => {
-  const accessToken = authService.getAccessToken()
+  const accessToken = await authService.getAccessToken()
   const response = await axios.get(`${getBackendUrl()}/api/v1/parties/get/${id}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -95,7 +95,7 @@ export const getParty = async (id: string) => {
 
 // Location2 State
 export const listStates = async () => {
-  const accessToken = authService.getAccessToken()
+  const accessToken = await authService.getAccessToken()
   const response = await axios.get(`${getBackendUrl()}/api/v1/states/list`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -106,7 +106,7 @@ export const listStates = async () => {
 
 // Location2 District
 export const listDistricts = async (data: ListDistrictsInput) => {
-  const accessToken = authService.getAccessToken()
+  const accessToken = await authService.getAccessToken()
   const response = await axios.post(`${getBackendUrl()}/api/v1/districts/list`, data, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -117,7 +117,7 @@ export const listDistricts = async (data: ListDistrictsInput) => {
 
 // Location2 Taluka
 export const listTalukas = async (data: ListTalukasInput) => {
-  const accessToken = authService.getAccessToken()
+  const accessToken = await authService.getAccessToken()
   const response = await axios.post(`${getBackendUrl()}/api/v1/talukas/list`, data, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -128,7 +128,7 @@ export const listTalukas = async (data: ListTalukasInput) => {
 
 // Location2 City
 export const listCities = async (data: ListCitiesInput) => {
-  const accessToken = authService.getAccessToken()
+  const accessToken = await authService.getAccessToken()
   const response = await axios.post(`${getBackendUrl()}/api/v1/cities/list`, data, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -139,7 +139,7 @@ export const listCities = async (data: ListCitiesInput) => {
 
 // Material API
 export const listMaterials = async () => {
-  const accessToken = authService.getAccessToken()
+  const accessToken = await authService.getAccessToken()
   const response = await axios.get(`${getBackendUrl()}/api/v1/materials/list`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -149,7 +149,7 @@ export const listMaterials = async () => {
 }
 
 export const createMaterial = async (data: TMaterial) => {
-  const accessToken = authService.getAccessToken()
+  const accessToken = await authService.getAccessToken()
   const response = await axios.post(`${getBackendUrl()}/api/v1/materials/create`, data, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -159,7 +159,7 @@ export const createMaterial = async (data: TMaterial) => {
 }
 
 export const updateMaterial = async (data: TMaterial) => {
-  const accessToken = authService.getAccessToken()
+  const accessToken = await authService.getAccessToken()
   const response = await axios.post(`${getBackendUrl()}/api/v1/materials/update`, data, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -169,7 +169,7 @@ export const updateMaterial = async (data: TMaterial) => {
 }
 
 export const getMaterial = async (id: string) => {
-  const accessToken = authService.getAccessToken()
+  const accessToken = await authService.getAccessToken()
   const response = await axios.get(`${getBackendUrl()}/api/v1/materials/get/${id}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -180,7 +180,7 @@ export const getMaterial = async (id: string) => {
 
 // Employee API
 export const createEmployee = async (data: TEmployee) => {
-  const accessToken = authService.getAccessToken()
+  const accessToken = await authService.getAccessToken()
   const response = await axios.post(`${getBackendUrl()}/api/v1/employees/create`, data, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -190,7 +190,7 @@ export const createEmployee = async (data: TEmployee) => {
 }
 
 export const updateEmployee = async (data: TEmployee) => {
-  const accessToken = authService.getAccessToken()
+  const accessToken = await authService.getAccessToken()
   const response = await axios.post(`${getBackendUrl()}/api/v1/employees/update`, data, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -200,7 +200,7 @@ export const updateEmployee = async (data: TEmployee) => {
 }
 
 export const listEmployees = async (data: ListEmployeesInput) => {
-  const accessToken = authService.getAccessToken()
+  const accessToken = await authService.getAccessToken()
   const response = await axios.post(`${getBackendUrl()}/api/v1/employees/list`, data, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -210,7 +210,7 @@ export const listEmployees = async (data: ListEmployeesInput) => {
 }
 
 export const getEmployee = async (id: string) => {
-  const accessToken = authService.getAccessToken()
+  const accessToken = await authService.getAccessToken()
   const response = await axios.get(`${getBackendUrl()}/api/v1/employees/get/${id}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -225,6 +225,11 @@ export const login = async (data: TLogin) => {
   return response.data
 }
 
+export const refreshUserToken = async (data: { refreshToken: string }) => {
+  const response = await axios.post(`${getBackendUrl()}/api/v1/auth/refresh`, data)
+  return response.data
+}
+
 export const getNewAccessToken = async (accessToken: string, refreshToken: string) => {
   const response = await axios.post(`${getBackendUrl()}/api/v1/auth/refresh`, { accessToken, refreshToken })
   return response.data
@@ -232,7 +237,7 @@ export const getNewAccessToken = async (accessToken: string, refreshToken: strin
 
 // Delivery Order API
 export const createDeliveryOrder = async (data: TDeliveryOrder) => {
-  const accessToken = authService.getAccessToken()
+  const accessToken = await authService.getAccessToken()
   const response = await axios.post(`${getBackendUrl()}/api/v1/delivery-orders/create`, data, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -242,7 +247,7 @@ export const createDeliveryOrder = async (data: TDeliveryOrder) => {
 }
 
 export const updateDeliveryOrder = async (data: TDeliveryOrder) => {
-  const accessToken = authService.getAccessToken()
+  const accessToken = await authService.getAccessToken()
   const response = await axios.post(`${getBackendUrl()}/api/v1/delivery-orders/update`, data, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -252,7 +257,7 @@ export const updateDeliveryOrder = async (data: TDeliveryOrder) => {
 }
 
 export const getDeliveryOrder = async (id: string) => {
-  const accessToken = authService.getAccessToken()
+  const accessToken = await authService.getAccessToken()
   const response = await axios.get(`${getBackendUrl()}/api/v1/delivery-orders/get/${id}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
