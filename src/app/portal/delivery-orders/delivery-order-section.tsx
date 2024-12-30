@@ -6,10 +6,10 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { listDistricts } from '@/lib/actions'
+import { listDistricts, listLocations, listTalukas } from '@/lib/actions'
 import { useQuery } from '@tanstack/react-query'
 import { Select, SelectContent, SelectValue, SelectTrigger, SelectItem } from '@/components/ui/select'
-import { Trash2Icon } from 'lucide-react'
+import { PlusIcon, Trash2Icon } from 'lucide-react'
 
 interface DeliveryOrderSectionProps {
   section: TDeliveryOrderSection
@@ -28,11 +28,20 @@ export default function DeliveryOrderSection({ section, index, removeSection, is
     initialData: [],
   })
 
+  const talukasQuery = useQuery<string[]>({
+    queryKey: ['talukas', section.district],
+    queryFn: () =>
+      listTalukas({
+        districts: section.district ? [section.district] : [],
+      }),
+    initialData: [],
+  })
+
   return (
     <div>
       <div className="flex justify-between items-center">
         <div className="flex justify-start items-center space-x-2 mb-2">
-          <FormLabel>District</FormLabel>
+          <FormLabel className="font-semibold text-sm">District: </FormLabel>
           <FormField
             control={control}
             name={`deliveryOrderSections.${index}.district`}
@@ -58,26 +67,14 @@ export default function DeliveryOrderSection({ section, index, removeSection, is
           />
         </div>
 
-        <div className="flex justify-start items-center space-x-2 mb-2">
+        <div className="flex justify-end items-center">
           <Button type="button" size="icon" onClick={() => removeSection(index)} disabled={isLoading || !editMode} variant="ghost">
             <Trash2Icon className="w-4 h-4 text-red-500 cursor-pointer" />
           </Button>
         </div>
       </div>
 
-      <FormField
-        control={control}
-        name={`deliveryOrderSections.${index}.status`}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Status</FormLabel>
-            <FormControl>
-              <Input {...field} disabled={isLoading || !editMode} onChange={(e) => field.onChange(e.target.value)} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      <div className="my-4" />
 
       <Separator className="my-4" />
     </div>

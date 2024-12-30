@@ -83,10 +83,12 @@ export default function DeliveryOrderForm({ enableEdit, deliveryOrder }: Deliver
       <form onSubmit={form.handleSubmit(onSubmit, onFormError)}>
         <div className="flex justify-between items-center">
           <p className="font-semibold text-sm text-muted-foreground">Delivery Order Details</p>
-          <Button type="submit" disabled={isLoading || !editMode}>
+          <Button type="submit" disabled={isLoading || !editMode} size="sm">
             Save
           </Button>
         </div>
+
+        <div className="my-4" />
         <div className="grid sm:grid-cols-3 grid-cols-1 gap-4">
           <FormField
             control={form.control}
