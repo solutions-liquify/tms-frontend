@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { toast } from 'sonner'
 import { createDeliveryOrder, listParties, updateDeliveryOrder } from '@/lib/actions'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { TParty } from '@/schemas/party-schema'
 import DeliveryOrderSection from './delivery-order-section'
@@ -70,8 +70,39 @@ export default function DeliveryOrderForm({ enableEdit, deliveryOrder }: Deliver
     initialData: [],
   })
 
-  const onSubmit = async (data: TDeliveryOrder) => {
-    console.log('data', data)
+  const mutation = useMutation({
+    mutationFn: async (data: TDeliveryOrder) => {
+      setIsLoading(true)
+      if (data.id) {
+        await updateDeliveryOrder(data)
+        await queryClient.invalidateQueries({
+          queryKey: ['deliveryOrder', data.id],
+        })
+      } else {
+        await createDeliveryOrder(data)
+      }
+    },
+    onSuccess: async () => {
+      try {
+        await queryClient.invalidateQueries({ queryKey: ['deliveryOrders'] })
+        toast.success('Delivery Order saved successfully')
+        router.back()
+      } catch (error) {
+        console.log(error)
+        toast.error('Error invalidating cache.')
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    onError: (error) => {
+      setIsLoading(false)
+      console.log(error)
+      toast.error('An error occurred. Please try again later.')
+    },
+  })
+
+  const onSubmit = (data: TDeliveryOrder) => {
+    mutation.mutate(data)
   }
 
   const onFormError = (errors: any) => {

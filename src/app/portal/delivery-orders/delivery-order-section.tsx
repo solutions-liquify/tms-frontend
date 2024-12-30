@@ -92,37 +92,40 @@ export default function DeliveryOrderSection({ section, index, removeSection, is
 
       <div className="my-4" />
 
-      <div>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="">#</TableHead>
-              <TableHead className="w-1/6">Taluka</TableHead>
-              <TableHead className="w-1/6">Location</TableHead>
-              <TableHead className="w-1/6">Material</TableHead>
-              <TableHead className="w-1/6">Quantity</TableHead>
-              <TableHead className="w-1/6">Rate</TableHead>
-              <TableHead></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {fields.map((field, itemIndex) => (
-              <DeliveryOrderItem
-                key={field.id}
-                item={field as any}
-                index={itemIndex}
-                removeItem={() => remove(itemIndex)}
-                isLoading={isLoading}
-                editMode={editMode}
-                sectionIndex={index}
-              />
-            ))}
-          </TableBody>
-        </Table>
-        <Button type="button" onClick={addItem} disabled={isLoading || !editMode} variant="outline">
-          Add Item
-        </Button>
-      </div>
+      {section.district && (
+        <div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="">#</TableHead>
+                <TableHead className="w-1/6">Taluka</TableHead>
+                <TableHead className="w-1/6">Location</TableHead>
+                <TableHead className="w-1/6">Material</TableHead>
+                <TableHead className="w-1/6">Quantity</TableHead>
+                <TableHead className="w-1/6">Rate</TableHead>
+                <TableHead></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {fields.map((field, itemIndex) => (
+                <DeliveryOrderItem
+                  key={field.id}
+                  item={field as any}
+                  index={itemIndex}
+                  removeItem={() => remove(itemIndex)}
+                  isLoading={isLoading}
+                  editMode={editMode}
+                  sectionIndex={index}
+                />
+              ))}
+            </TableBody>
+          </Table>
+
+          <Button type="button" onClick={addItem} disabled={isLoading || !editMode} variant="outline" className="mt-4">
+            Add Item
+          </Button>
+        </div>
+      )}
 
       <Separator className="my-4" />
     </div>

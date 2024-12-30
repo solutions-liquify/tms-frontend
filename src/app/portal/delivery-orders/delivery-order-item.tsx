@@ -145,7 +145,7 @@ export default function DeliveryOrderItem({ item, index, removeItem, isLoading, 
             )}
           />
         </TableCell>
-        <TableCell className="p-0">
+        <TableCell className="p-2">
           <FormField
             control={control}
             name={`deliveryOrderSections.${sectionIndex}.deliveryOrderItems.${index}.rate`}
@@ -157,7 +157,7 @@ export default function DeliveryOrderItem({ item, index, removeItem, isLoading, 
                     type="number"
                     disabled={isLoading || !editMode}
                     className="w-full border-0 rounded-none shadow-none focus:ring-0 px-3 py-2 h-10 text-right"
-                    onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                   />
                 </FormControl>
                 <FormMessage />
@@ -166,7 +166,7 @@ export default function DeliveryOrderItem({ item, index, removeItem, isLoading, 
           />
         </TableCell>
 
-        <TableCell className="p-0">
+        <TableCell className="p-2">
           <Button
             type="button"
             size="icon"
