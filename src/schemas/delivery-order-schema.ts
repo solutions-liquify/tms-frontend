@@ -3,11 +3,8 @@ import * as z from 'zod'
 export const DeliveryOrderItemSchema = z.object({
   id: z.string().optional().nullable(),
   deliveryOrderId: z.string().optional().nullable(),
-  deliverySectionId: z.string().optional().nullable(),
-  state: z.string().nullable().optional(),
   district: z.string().nullable().optional(),
   taluka: z.string().nullable().optional(),
-  city: z.string().nullable().optional(),
   locationId: z.string().optional().nullable(),
   materialId: z.string().optional().nullable(),
   quantity: z.number(),
@@ -18,20 +15,15 @@ export const DeliveryOrderItemSchema = z.object({
   unit: z.string().optional().nullable(),
   dueDate: z.number().optional().nullable(),
   status: z.string(),
-  indexOrder: z.number(),
 })
 
 export const DeliveryOrderSectionSchema = z.object({
-  id: z.string().optional().nullable(),
-  deliveryOrderId: z.string().optional().nullable(),
-  state: z.string().nullable().optional(),
   district: z.string().nullable().optional(),
   totalQuantity: z.number(),
   totalPendingQuantity: z.number(),
   totalInProgressQuantity: z.number(),
   totalDeliveredQuantity: z.number(),
   status: z.string(),
-  indexOrder: z.number(),
   deliveryOrderItems: z.array(DeliveryOrderItemSchema).optional().nullable(),
 })
 

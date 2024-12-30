@@ -8,7 +8,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { login } from '@/lib/actions'
 import { authService } from '@/lib/auth'
 import { Loader2 } from 'lucide-react'
@@ -16,6 +16,17 @@ import { Loader2 } from 'lucide-react'
 export default function LoginForm() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    const fetchAccessToken = async () => {
+      const accessToken = await authService.getAccessToken()
+      if (accessToken) {
+        router.push('/portal/dashboard')
+      }
+    }
+    fetchAccessToken()
+  }, [])
+
   const form = useForm<TLogin>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {},
