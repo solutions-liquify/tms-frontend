@@ -1,42 +1,34 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
-import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { TableCell, TableRow } from '@/components/ui/table'
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { listLocations, listMaterials, listTalukas } from '@/lib/actions'
-import { TDeliveryOrderItem } from '@/schemas/delivery-order-schema'
-import { ListLocationsInput, TLocation } from '@/schemas/location-schema'
-import { TMaterial } from '@/schemas/material-schema'
 import { useQuery } from '@tanstack/react-query'
-import { Trash2Icon } from 'lucide-react'
-import { useFormContext } from 'react-hook-form'
+import { TDeliveryOrder } from '@/schemas/delivery-order-schema'
+import { UseFormReturn } from 'react-hook-form'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { TMaterial } from '@/schemas/material-schema'
+import { TLocation } from '@/schemas/location-schema'
+import { useEffect } from 'react'
+import { Input } from '@/components/ui/input'
 
 interface DeliveryOrderItemProps {
-  item: TDeliveryOrderItem
   index: number
-  removeItem: (index: number) => void
-  isLoading: boolean
-  editMode: boolean
-  sectionIndex: number
+  itemIndex: number
+  form: UseFormReturn<TDeliveryOrder>
+  district: string | undefined | null
 }
 
-export default function DeliveryOrderItem({ item, index, removeItem, isLoading, editMode, sectionIndex }: DeliveryOrderItemProps) {
-  const { control } = useFormContext()
-
+export const DeliveryOrderItem = ({ index, itemIndex, form, district }: DeliveryOrderItemProps) => {
   const talukasQuery = useQuery<string[]>({
-    queryKey: ['talukas', item.district],
-    queryFn: () =>
-      listTalukas({
-        districts: item.district ? [item.district] : [],
-      }),
+    queryKey: ['talukas', district],
+    queryFn: () => listTalukas({ districts: district ? [district] : [] }),
     initialData: [],
   })
 
   const locationsQuery = useQuery<TLocation[]>({
-    queryKey: ['locations', item.district, item.taluka],
-    queryFn: () => listLocations({ district: item.district, taluka: item.taluka } as ListLocationsInput),
+    queryKey: ['locations', district, form.getValues(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.taluka`)],
+    queryFn: () =>
+      listLocations({ district: district, taluka: form.getValues(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.taluka`) || null }),
     initialData: [],
   })
 
@@ -46,139 +38,168 @@ export default function DeliveryOrderItem({ item, index, removeItem, isLoading, 
     initialData: [],
   })
 
-  return (
-    <>
-      <TableRow className="hover:bg-gray-50 group">
-        <TableCell className="">{index + 1}</TableCell>
-        <TableCell className="p-0">
-          <FormField
-            control={control}
-            name={`deliveryOrderSections.${sectionIndex}.deliveryOrderItems.${index}.taluka`}
-            render={({ field }) => (
-              <FormItem className="space-y-0">
-                <FormControl>
-                  <Select {...field} disabled={isLoading || !editMode} onValueChange={field.onChange} value={field.value ?? ''}>
-                    <SelectTrigger className="w-full border-0 rounded-none shadow-none focus:ring-0 px-3 py-2 h-10">
-                      <SelectValue placeholder="Select a taluka" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {talukasQuery.data?.map((taluka) => (
-                        <SelectItem key={taluka} value={taluka}>
-                          {taluka}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </TableCell>
-        <TableCell className="p-0">
-          <FormField
-            control={control}
-            name={`deliveryOrderSections.${sectionIndex}.deliveryOrderItems.${index}.locationId`}
-            render={({ field }) => (
-              <FormItem className="space-y-0">
-                <FormControl>
-                  <Select {...field} disabled={isLoading || !editMode} onValueChange={field.onChange} value={field.value ?? ''}>
-                    <SelectTrigger className="w-full border-0 rounded-none shadow-none focus:ring-0 px-3 py-2 h-10">
-                      <SelectValue placeholder="Select a location" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {locationsQuery.data?.map((location) => (
-                        <SelectItem key={location.id} value={location.id ?? ''}>
-                          {location.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </TableCell>
-        <TableCell className="p-0">
-          <FormField
-            control={control}
-            name={`deliveryOrderSections.${sectionIndex}.deliveryOrderItems.${index}.materialId`}
-            render={({ field }) => (
-              <FormItem className="space-y-0">
-                <FormControl>
-                  <Select {...field} disabled={isLoading || !editMode} onValueChange={field.onChange} value={field.value ?? ''}>
-                    <SelectTrigger className="w-full border-0 rounded-none shadow-none focus:ring-0 px-3 py-2 h-10">
-                      <SelectValue placeholder="Select a material" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {materialsQuery.data?.map((material) => (
-                        <SelectItem key={material.id} value={material.id ?? ''}>
-                          {material.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </TableCell>
-        <TableCell className="p-0">
-          <FormField
-            control={control}
-            name={`deliveryOrderSections.${sectionIndex}.deliveryOrderItems.${index}.quantity`}
-            render={({ field }) => (
-              <FormItem className="space-y-0">
-                <FormControl>
-                  <Input
-                    {...field}
-                    type="number"
-                    disabled={isLoading || !editMode}
-                    className="w-full border-0 rounded-none shadow-none focus:ring-0 px-3 py-2 h-10 text-right"
-                    onChange={(e) => field.onChange(parseFloat(e.target.value))}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </TableCell>
-        <TableCell className="p-2">
-          <FormField
-            control={control}
-            name={`deliveryOrderSections.${sectionIndex}.deliveryOrderItems.${index}.rate`}
-            render={({ field }) => (
-              <FormItem className="space-y-0">
-                <FormControl>
-                  <Input
-                    {...field}
-                    type="number"
-                    disabled={isLoading || !editMode}
-                    className="w-full border-0 rounded-none shadow-none focus:ring-0 px-3 py-2 h-10 text-right"
-                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </TableCell>
+  useEffect(() => {
+    if (!form.getValues(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.pendingQuantity`)) {
+      form.setValue(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.pendingQuantity`, 0)
+    }
+    if (!form.getValues(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.deliveredQuantity`)) {
+      form.setValue(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.deliveredQuantity`, 0)
+    }
+    if (!form.getValues(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.inProgressQuantity`)) {
+      form.setValue(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.inProgressQuantity`, 0)
+    }
+    if (!form.getValues(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.status`)) {
+      form.setValue(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.status`, 'pending')
+    }
 
-        <TableCell className="p-2">
-          <Button
-            type="button"
-            size="icon"
-            onClick={() => removeItem(index)}
-            disabled={isLoading || !editMode}
-            variant="ghost"
-            className="h-10 w-10 opacity-0 group-hover:opacity-100 transition-opacity"
-          >
-            <Trash2Icon className="w-4 h-4 text-red-500" />
-          </Button>
-        </TableCell>
-      </TableRow>
-    </>
+    form.setValue(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.district`, district)
+  }, [form, index, itemIndex, district])
+
+  return (
+    <div className="grid grid-cols-1 gap-4">
+      <FormField
+        control={form.control}
+        name={`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.taluka`}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Taluka</FormLabel>
+            <FormControl>
+              <Select {...field} onValueChange={field.onChange} value={field.value ?? ''}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a taluka" />
+                </SelectTrigger>
+                <SelectContent>
+                  {talukasQuery.data?.map((taluka, talukaIndex) => (
+                    <SelectItem key={`${taluka}-${talukaIndex}`} value={taluka}>
+                      {taluka}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name={`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.locationId`}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Location</FormLabel>
+            <FormControl>
+              <Select {...field} onValueChange={field.onChange} value={field.value ?? ''}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a location" />
+                </SelectTrigger>
+                <SelectContent>
+                  {locationsQuery.data?.map((location) => (
+                    <SelectItem key={location.id} value={location.id ?? ''}>
+                      {location.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name={`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.materialId`}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Material</FormLabel>
+            <FormControl>
+              <Select {...field} onValueChange={field.onChange} value={field.value ?? ''}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a material" />
+                </SelectTrigger>
+                <SelectContent>
+                  {materialsQuery.data?.map((material) => (
+                    <SelectItem key={material.id} value={material.id ?? ''}>
+                      {material.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name={`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.quantity`}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Quantity</FormLabel>
+            <FormControl>
+              <Input type="number" {...field} onChange={(e) => field.onChange(parseFloat(e.target.value))} value={field.value ?? ''} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name={`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.unit`}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Unit</FormLabel>
+            <FormControl>
+              <Select {...field} onValueChange={field.onChange} value={field.value ?? ''}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a unit" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="mt">mt</SelectItem>
+                  <SelectItem value="kg">kg</SelectItem>
+                  <SelectItem value="unit">unit</SelectItem>
+                </SelectContent>
+              </Select>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name={`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.rate`}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Rate</FormLabel>
+            <FormControl>
+              <Input type="number" {...field} onChange={(e) => field.onChange(parseFloat(e.target.value))} value={field.value ?? ''} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name={`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.dueDate`}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Due Date</FormLabel>
+            <FormControl>
+              <Input
+                {...field}
+                type={'date'}
+                value={field.value ? new Date(field.value * 1000).toISOString().split('T')[0] : ''}
+                onChange={(e) => field.onChange(Math.floor(new Date(e.target.value).getTime() / 1000))}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    </div>
   )
 }

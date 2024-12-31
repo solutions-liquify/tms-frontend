@@ -26,7 +26,7 @@ export default function DeliveryOrderForm({ enableEdit, deliveryOrder }: Deliver
   const router = useRouter()
   const queryClient = useQueryClient()
   const [isLoading, setIsLoading] = useState(false)
-  const [editMode, setEditMode] = useState(true)
+  const [editMode, setEditMode] = useState(enableEdit)
 
   const form = useForm<TDeliveryOrder>({
     resolver: zodResolver(DeliveryOrderSchema),
@@ -102,7 +102,8 @@ export default function DeliveryOrderForm({ enableEdit, deliveryOrder }: Deliver
   })
 
   const onSubmit = (data: TDeliveryOrder) => {
-    mutation.mutate(data)
+    // mutation.mutate(data)
+    console.log(data)
   }
 
   const onFormError = (errors: any) => {
@@ -198,6 +199,7 @@ export default function DeliveryOrderForm({ enableEdit, deliveryOrder }: Deliver
             ?.map((section, index) => (
               <DeliveryOrderSection
                 key={index}
+                form={form}
                 section={section}
                 index={index}
                 removeSection={removeSectionByIndex}
