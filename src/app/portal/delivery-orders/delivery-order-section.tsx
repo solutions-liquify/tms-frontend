@@ -14,6 +14,7 @@ import { PencilIcon, Trash2Icon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useFieldArray, UseFormReturn } from 'react-hook-form'
 import { DeliveryOrderItem } from './delivery-order-item'
+import { Badge } from '@/components/ui/badge'
 
 interface DeliveryOrderSectionProps {
   section: TDeliveryOrderSection
@@ -211,22 +212,16 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
             <th scope="col" className="whitespace-nowrap px-2 py-1 text-left w-1/12">
               Material
             </th>
-            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left w-1/12 ">
+            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left w-2/12">
               Quantity
             </th>
             <th scope="col" className="whitespace-nowrap px-2 py-1 text-left w-1/12">
               Rate
             </th>
-            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left w-1/12 ">
+            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left w-1/12">
               Due Date
             </th>
-            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left w-1/12 ">
-              Delivered
-            </th>
-            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left w-1/12">
-              In Progress
-            </th>
-            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left w-1/12">
+            <th scope="col" className="whitespace-nowrap px-2 py-1 text-center w-2/12">
               Status
             </th>
             <th scope="col" className="relative whitespace-nowrap py-1 pl-3 pr-4 sm:pr-0 w-1/12">
@@ -245,12 +240,15 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
               <td className="whitespace-nowrap px-2 py-1 text-gray-900">
                 {materialsQuery.data?.find((material) => material.id === item.materialId)?.name || item.materialId}
               </td>
-              <td className="whitespace-nowrap px-2 py-1 text-gray-900">{item.quantity}</td>
+              <td className="whitespace-nowrap px-2 py-1 text-gray-900 ">
+                {item.quantity} | <span className="text-green-500">{item.deliveredQuantity}</span> |{' '}
+                <span className="text-amber-500">{item.inProgressQuantity}</span>
+              </td>
               <td className="whitespace-nowrap px-2 py-1 text-gray-900">{item.rate}</td>
               <td className="whitespace-nowrap px-2 py-1 text-gray-900">{item.dueDate ? new Date(item.dueDate * 1000).toLocaleDateString('en-GB') : ''}</td>
-              <td className="whitespace-nowrap px-2 py-1 text-gray-900">{item.deliveredQuantity}</td>
-              <td className="whitespace-nowrap px-2 py-1 text-gray-900">{item.inProgressQuantity}</td>
-              <td className="whitespace-nowrap px-2 py-1 text-gray-900 capitalize">{item.status}</td>
+              <td className="whitespace-nowrap px-2 py-1 text-gray-900 capitalize text-center">
+                <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-200">{item.status}</Badge>
+              </td>
               <td className="relative whitespace-nowrap py-1 pl-3 pr-4 text-right">
                 <div className="flex justify-end items-center space-x-2">
                   <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
@@ -312,18 +310,17 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
           ))}
 
           <tr className="bg-gray-50 text-sm">
-            <td className="whitespace-nowrap py-2 pl-4 pr-3 font-semibold text-gray-900 sm:pl-2" colSpan={4}>
+            <td className="whitespace-nowrap px-2 py-2 font-semibold text-gray-900"></td>
+            <td className="whitespace-nowrap py-2 pl-4 pr-3 font-semibold text-gray-900 sm:pl-2" colSpan={3}>
               Total
             </td>
-            <td className="whitespace-nowrap px-2 py-2 font-semibold text-gray-900">{form.getValues(`deliveryOrderSections.${index}.totalQuantity`)}</td>
+            <td className="whitespace-nowrap px-2 py-2 font-semibold text-gray-900">
+              {form.getValues(`deliveryOrderSections.${index}.totalQuantity`)} |{' '}
+              <span className="text-green-500">{form.getValues(`deliveryOrderSections.${index}.totalDeliveredQuantity`)}</span> |{' '}
+              <span className="text-amber-500">{form.getValues(`deliveryOrderSections.${index}.totalInProgressQuantity`)}</span>
+            </td>
             <td className="whitespace-nowrap px-2 py-2 font-semibold text-gray-900"></td>
             <td className="whitespace-nowrap px-2 py-2 font-semibold text-gray-900"></td>
-            <td className="whitespace-nowrap px-2 py-2 font-semibold text-gray-900">
-              {form.getValues(`deliveryOrderSections.${index}.totalDeliveredQuantity`)}
-            </td>
-            <td className="whitespace-nowrap px-2 py-2 font-semibold text-gray-900">
-              {form.getValues(`deliveryOrderSections.${index}.totalInProgressQuantity`)}
-            </td>
             <td className="whitespace-nowrap px-2 py-2 font-semibold text-gray-900"></td>
             <td className="relative whitespace-nowrap py-2 pl-3 pr-4 text-right font-medium sm:pr-0"></td>
           </tr>
