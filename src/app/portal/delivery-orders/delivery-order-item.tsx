@@ -38,21 +38,6 @@ export const DeliveryOrderItem = ({ index, itemIndex, form, district }: Delivery
     initialData: [],
   })
 
-  useEffect(() => {
-    if (!form.getValues(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.deliveredQuantity`)) {
-      form.setValue(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.deliveredQuantity`, 0)
-    }
-
-    if (!form.getValues(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.inProgressQuantity`)) {
-      form.setValue(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.inProgressQuantity`, 0)
-    }
-    if (!form.getValues(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.status`)) {
-      form.setValue(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.status`, 'pending')
-    }
-
-    form.setValue(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.district`, district)
-  }, [form, index, itemIndex, district])
-
   return (
     <div className="grid grid-cols-1 gap-4 overflow-y-auto p-4">
       <FormField
