@@ -33,7 +33,6 @@ export default function DeliveryOrderForm({ enableEdit, deliveryOrder }: Deliver
     defaultValues: deliveryOrder ?? {
       // deliveryOrderSections: [],
       grandTotalQuantity: 0,
-      grandTotalPendingQuantity: 0,
       grandTotalInProgressQuantity: 0,
       grandTotalDeliveredQuantity: 0,
       status: 'pending',
@@ -52,9 +51,8 @@ export default function DeliveryOrderForm({ enableEdit, deliveryOrder }: Deliver
   const addSection = () => {
     appendSection({
       totalQuantity: 0,
-      totalPendingQuantity: 0,
-      totalInProgressQuantity: 0,
       totalDeliveredQuantity: 0,
+      totalInProgressQuantity: 0,
       status: 'pending',
       deliveryOrderItems: [],
     })
@@ -186,9 +184,6 @@ export default function DeliveryOrderForm({ enableEdit, deliveryOrder }: Deliver
 
         <div className="flex justify-between items-center">
           <p className="font-semibold text-sm text-muted-foreground">Delivery Orders Sections</p>
-          <Button type="button" onClick={addSection} size="sm" disabled={isLoading || !editMode}>
-            Add Section
-          </Button>
         </div>
 
         <Separator className="my-4" />
@@ -208,6 +203,10 @@ export default function DeliveryOrderForm({ enableEdit, deliveryOrder }: Deliver
               />
             ))}
         </div>
+
+        <Button type="button" onClick={addSection} size="sm" disabled={isLoading || !editMode}>
+          Add Section
+        </Button>
       </form>
     </Form>
   )

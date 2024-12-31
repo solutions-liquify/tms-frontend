@@ -39,8 +39,8 @@ export const DeliveryOrderItem = ({ index, itemIndex, form, district }: Delivery
   })
 
   useEffect(() => {
-    if (!form.getValues(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.pendingQuantity`)) {
-      form.setValue(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.pendingQuantity`, 0)
+    if (!form.getValues(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.deliveredQuantity`)) {
+      form.setValue(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.deliveredQuantity`, 0)
     }
 
     if (!form.getValues(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.inProgressQuantity`)) {

@@ -54,11 +54,12 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
     const subscription = form.watch((value, { name }) => {
       if (name?.startsWith(`deliveryOrderSections.${index}.deliveryOrderItems`)) {
         const totalQuantity = value.deliveryOrderSections?.[index]?.deliveryOrderItems?.reduce((acc, item) => acc + (item?.quantity || 0), 0) || 0
-        const totalPendingQuantity = value.deliveryOrderSections?.[index]?.deliveryOrderItems?.reduce((acc, item) => acc + (item?.pendingQuantity || 0), 0) || 0
+        const totalDeliveredQuantity =
+          value.deliveryOrderSections?.[index]?.deliveryOrderItems?.reduce((acc, item) => acc + (item?.deliveredQuantity || 0), 0) || 0
         const totalInProgressQuantity =
           value.deliveryOrderSections?.[index]?.deliveryOrderItems?.reduce((acc, item) => acc + (item?.inProgressQuantity || 0), 0) || 0
         form.setValue(`deliveryOrderSections.${index}.totalQuantity`, totalQuantity)
-        form.setValue(`deliveryOrderSections.${index}.totalPendingQuantity`, totalPendingQuantity)
+        form.setValue(`deliveryOrderSections.${index}.totalDeliveredQuantity`, totalDeliveredQuantity)
         form.setValue(`deliveryOrderSections.${index}.totalInProgressQuantity`, totalInProgressQuantity)
       }
     })
@@ -200,7 +201,7 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
               Due Date
             </th>
             <th scope="col" className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
-              Pending
+              Delivered
             </th>
             <th scope="col" className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
               In Progress
@@ -229,10 +230,10 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
               <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-900">
                 {item.dueDate ? new Date(item.dueDate * 1000).toLocaleDateString('en-GB') : ''}
               </td>
-              <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-900">{item.pendingQuantity}</td>
+              <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-900">{item.deliveredQuantity}</td>
               <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-900">{item.inProgressQuantity}</td>
               <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-900 capitalize">{item.status}</td>
-              <td className="relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+              <td className="relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium ">
                 <button type="button" className="text-red-600 hover:text-red-900" onClick={() => remove(itemIndex)} disabled={isLoading || !editMode}>
                   <Trash2Icon className="w-4 h-4 text-red-500 cursor-pointer" />
                 </button>
