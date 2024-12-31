@@ -41,3 +41,17 @@ export const DeliveryOrderSchema = z.object({
 export type TDeliveryOrder = z.infer<typeof DeliveryOrderSchema>
 export type TDeliveryOrderSection = z.infer<typeof DeliveryOrderSectionSchema>
 export type TDeliveryOrderItem = z.infer<typeof DeliveryOrderItemSchema>
+
+export type ListDeliveryOrdersInput = {
+  search?: string | null
+  page?: number
+  pageSize?: number
+}
+
+export type ListDeliveryOrderItem = {
+  id: string
+  contractId: string
+  partyName: string
+  status: string
+  grandTotalQuantity: number
+}

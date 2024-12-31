@@ -8,7 +8,7 @@ import { TMaterial } from '@/schemas/material-schema'
 import { ListEmployeesInput, TEmployee } from '@/schemas/employee-schema'
 import { TLogin } from '@/schemas/auth-schema'
 import { authService } from '@/lib/auth'
-import { TDeliveryOrder } from '@/schemas/delivery-order-schema'
+import { ListDeliveryOrdersInput, TDeliveryOrder } from '@/schemas/delivery-order-schema'
 
 // Godown Location API
 export const createLocation = async (data: TLocation) => {
@@ -259,6 +259,16 @@ export const updateDeliveryOrder = async (data: TDeliveryOrder) => {
 export const getDeliveryOrder = async (id: string) => {
   const accessToken = await authService.getAccessToken()
   const response = await axios.get(`${getBackendUrl()}/api/v1/delivery-orders/get/${id}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
+  return response.data
+}
+
+export const listDeliveryOrders = async (data: ListDeliveryOrdersInput) => {
+  const accessToken = await authService.getAccessToken()
+  const response = await axios.post(`${getBackendUrl()}/api/v1/delivery-orders/list`, data, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
