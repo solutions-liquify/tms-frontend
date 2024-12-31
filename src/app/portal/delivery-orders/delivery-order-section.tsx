@@ -198,62 +198,60 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
 
       <table className="min-w-full divide-y divide-gray-300">
         <thead>
-          <tr>
-            <th scope="col" className="whitespace-nowrap py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+          <tr className="text-xs font-semibold text-gray-800">
+            <th scope="col" className="whitespace-nowrap py-1 pl-4 pr-3 text-left  sm:pl-0">
               #
             </th>
-            <th scope="col" className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left">
               Taluka
             </th>
-            <th scope="col" className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left">
               Location
             </th>
-            <th scope="col" className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left">
               Material
             </th>
-            <th scope="col" className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left">
               Quantity
             </th>
-            <th scope="col" className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left">
               Rate
             </th>
-            <th scope="col" className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left">
               Due Date
             </th>
-            <th scope="col" className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left">
               Delivered
             </th>
-            <th scope="col" className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left">
               In Progress
             </th>
-            <th scope="col" className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left">
               Status
             </th>
-            <th scope="col" className="relative whitespace-nowrap py-3.5 pl-3 pr-4 sm:pr-0">
+            <th scope="col" className="relative whitespace-nowrap py-1 pl-3 pr-4 sm:pr-0">
               <span className="sr-only">Remove</span>
             </th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-200 bg-white">
+        <tbody className="divide-y divide-gray-200 bg-white text-xs">
           {fields.map((item, itemIndex) => (
             <tr key={item.id} className="cursor-pointer hover:bg-gray-100">
-              <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm text-gray-500 sm:pl-0">{itemIndex + 1}</td>
-              <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-900">{item.taluka}</td>
-              <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-900">
+              <td className="whitespace-nowrap py-1 pl-4 pr-3 text-gray-500 sm:pl-0">{itemIndex + 1}</td>
+              <td className="whitespace-nowrap px-2 py-1 text-gray-900">{item.taluka}</td>
+              <td className="whitespace-nowrap px-2 py-1 text-gray-900">
                 {locationsQuery.data?.find((location) => location.id === item.locationId)?.name || item.locationId}
               </td>
-              <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-900">
+              <td className="whitespace-nowrap px-2 py-1 text-gray-900">
                 {materialsQuery.data?.find((material) => material.id === item.materialId)?.name || item.materialId}
               </td>
-              <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-900">{item.quantity}</td>
-              <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-900">{item.rate}</td>
-              <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-900">
-                {item.dueDate ? new Date(item.dueDate * 1000).toLocaleDateString('en-GB') : ''}
-              </td>
-              <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-900">{item.deliveredQuantity}</td>
-              <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-900">{item.inProgressQuantity}</td>
-              <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-900 capitalize">{item.status}</td>
-              <td className="relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium ">
+              <td className="whitespace-nowrap px-2 py-1 text-gray-900">{item.quantity}</td>
+              <td className="whitespace-nowrap px-2 py-1 text-gray-900">{item.rate}</td>
+              <td className="whitespace-nowrap px-2 py-1 text-gray-900">{item.dueDate ? new Date(item.dueDate * 1000).toLocaleDateString('en-GB') : ''}</td>
+              <td className="whitespace-nowrap px-2 py-1 text-gray-900">{item.deliveredQuantity}</td>
+              <td className="whitespace-nowrap px-2 py-1 text-gray-900">{item.inProgressQuantity}</td>
+              <td className="whitespace-nowrap px-2 py-1 text-gray-900 capitalize">{item.status}</td>
+              <td className="relative whitespace-nowrap py-1 pl-3 pr-4 text-right">
                 <div className="flex justify-end items-center space-x-2">
                   <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
                     <DialogTrigger asChild>
@@ -313,23 +311,21 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
             </tr>
           ))}
 
-          <tr className="bg-gray-50">
-            <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-semibold text-gray-900 sm:pl-2" colSpan={4}>
+          <tr className="bg-gray-50 text-xs">
+            <td className="whitespace-nowrap py-2 pl-4 pr-3 font-semibold text-gray-900 sm:pl-2" colSpan={4}>
               Total
             </td>
-            <td className="whitespace-nowrap px-2 py-2 text-sm font-semibold text-gray-900">
-              {form.getValues(`deliveryOrderSections.${index}.totalQuantity`)}
-            </td>
-            <td className="whitespace-nowrap px-2 py-2 text-sm font-semibold text-gray-900"></td>
-            <td className="whitespace-nowrap px-2 py-2 text-sm font-semibold text-gray-900"></td>
-            <td className="whitespace-nowrap px-2 py-2 text-sm font-semibold text-gray-900">
+            <td className="whitespace-nowrap px-2 py-2 font-semibold text-gray-900">{form.getValues(`deliveryOrderSections.${index}.totalQuantity`)}</td>
+            <td className="whitespace-nowrap px-2 py-2 font-semibold text-gray-900"></td>
+            <td className="whitespace-nowrap px-2 py-2 font-semibold text-gray-900"></td>
+            <td className="whitespace-nowrap px-2 py-2 font-semibold text-gray-900">
               {form.getValues(`deliveryOrderSections.${index}.totalDeliveredQuantity`)}
             </td>
-            <td className="whitespace-nowrap px-2 py-2 text-sm font-semibold text-gray-900">
+            <td className="whitespace-nowrap px-2 py-2 font-semibold text-gray-900">
               {form.getValues(`deliveryOrderSections.${index}.totalInProgressQuantity`)}
             </td>
-            <td className="whitespace-nowrap px-2 py-2 text-sm font-semibold text-gray-900"></td>
-            <td className="relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium sm:pr-0"></td>
+            <td className="whitespace-nowrap px-2 py-2 font-semibold text-gray-900"></td>
+            <td className="relative whitespace-nowrap py-2 pl-3 pr-4 text-right font-medium sm:pr-0"></td>
           </tr>
         </tbody>
       </table>
