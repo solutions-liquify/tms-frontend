@@ -31,7 +31,7 @@ export default function DeliveryOrderForm({ enableEdit, deliveryOrder }: Deliver
   const form = useForm<TDeliveryOrder>({
     resolver: zodResolver(DeliveryOrderSchema),
     defaultValues: deliveryOrder ?? {
-      // deliveryOrderSections: [],
+      deliveryOrderSections: [],
       grandTotalQuantity: 0,
       grandTotalInProgressQuantity: 0,
       grandTotalDeliveredQuantity: 0,
@@ -113,9 +113,23 @@ export default function DeliveryOrderForm({ enableEdit, deliveryOrder }: Deliver
       <form onSubmit={form.handleSubmit(onSubmit, onFormError)}>
         <div className="flex justify-between items-center">
           <p className="font-semibold text-sm text-muted-foreground">Delivery Order Details</p>
-          <Button type="submit" disabled={isLoading || !editMode} size="sm">
-            Save
-          </Button>
+
+          {editMode && (
+            <div className="flex space-x-2">
+              <Button type="button" size="sm" disabled={isLoading} variant="ghost" onClick={() => router.back()}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isLoading} size="sm">
+                {isLoading ? 'Saving...' : 'Save'}
+              </Button>
+            </div>
+          )}
+
+          {!editMode && (
+            <Button type="button" disabled={isLoading} size="sm" onClick={() => setEditMode(true)}>
+              Edit
+            </Button>
+          )}
         </div>
 
         <div className="my-4" />

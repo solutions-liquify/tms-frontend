@@ -54,7 +54,7 @@ export const DeliveryOrderItem = ({ index, itemIndex, form, district }: Delivery
   }, [form, index, itemIndex, district])
 
   return (
-    <div className="grid grid-cols-1 gap-4">
+    <div className="grid grid-cols-1 gap-4 overflow-y-auto p-4">
       <FormField
         control={form.control}
         name={`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.taluka`}
