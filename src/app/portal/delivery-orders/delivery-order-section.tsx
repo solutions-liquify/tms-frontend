@@ -156,7 +156,7 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
                 Add Item
               </Button>
             </DialogTrigger>
-            <DialogContent className="overflow-y-auto w-full">
+            <DialogContent className="overflow-y-auto w-full h-[80vh]">
               <DialogHeader className="px-4">
                 <DialogTitle>Add Delivery Order Item</DialogTitle>
               </DialogHeader>
@@ -202,34 +202,34 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
             <th scope="col" className="whitespace-nowrap py-1 pl-4 pr-3 text-left  sm:pl-0">
               #
             </th>
-            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left">
+            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left w-1/12">
               Taluka
             </th>
-            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left">
+            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left w-2/12">
               Location
             </th>
-            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left">
+            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left w-1/12">
               Material
             </th>
-            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left">
+            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left w-1/12 ">
               Quantity
             </th>
-            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left">
+            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left w-1/12">
               Rate
             </th>
-            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left">
+            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left w-1/12 ">
               Due Date
             </th>
-            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left">
+            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left w-1/12 ">
               Delivered
             </th>
-            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left">
+            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left w-1/12">
               In Progress
             </th>
-            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left">
+            <th scope="col" className="whitespace-nowrap px-2 py-1 text-left w-1/12">
               Status
             </th>
-            <th scope="col" className="relative whitespace-nowrap py-1 pl-3 pr-4 sm:pr-0">
+            <th scope="col" className="relative whitespace-nowrap py-1 pl-3 pr-4 sm:pr-0 w-1/12">
               <span className="sr-only">Remove</span>
             </th>
           </tr>
@@ -270,7 +270,7 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
                         <PencilIcon className="w-4 h-4 text-blue-500 cursor-pointer" />
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="overflow-y-auto w-full">
+                    <DialogContent className="overflow-y-auto w-full h-[80vh]">
                       <DialogHeader className="px-4">
                         <DialogTitle>Edit Delivery Order Item</DialogTitle>
                       </DialogHeader>
