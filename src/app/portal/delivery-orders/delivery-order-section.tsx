@@ -28,6 +28,7 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [activeItemIndex, setActiveItemIndex] = useState<number | null>(null)
 
   const districtsQuery = useQuery<string[]>({
     queryKey: ['districts'],
@@ -47,7 +48,7 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
     initialData: [],
   })
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, update } = useFieldArray({
     control: form.control,
     name: `deliveryOrderSections.${index}.deliveryOrderItems`,
   })
@@ -95,8 +96,11 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
     form.unregister(`deliveryOrderSections.${index}.deliveryOrderItems.${-1}`)
   }
 
-  const handleEditItem = (itemIndex: number) => {
-    form.setValue(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}`, form.getValues(`deliveryOrderSections.${index}.deliveryOrderItems.${-1}`))
+  const handleEditItem = () => {
+    if (activeItemIndex === null) return
+    const updatedItem = form.getValues(`deliveryOrderSections.${index}.deliveryOrderItems.${-1}`)
+    form.setValue(`deliveryOrderSections.${index}.deliveryOrderItems.${activeItemIndex}`, updatedItem)
+    update(activeItemIndex, updatedItem)
     setIsEditDialogOpen(false)
     form.unregister(`deliveryOrderSections.${index}.deliveryOrderItems.${-1}`)
   }
@@ -258,13 +262,10 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
                         size={'icon'}
                         variant={'ghost'}
                         onClick={() => {
+                          setActiveItemIndex(itemIndex)
                           setIsEditDialogOpen(true)
                           form.setValue(`deliveryOrderSections.${index}.deliveryOrderItems.${-1}`, {
-                            quantity: 0,
-                            rate: 0,
-                            deliveredQuantity: 0,
-                            status: 'pending',
-                            inProgressQuantity: 0,
+                            ...form.getValues(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}`),
                           })
                         }}
                       >
@@ -289,7 +290,7 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
                         </Button>
                         <Button
                           type="button"
-                          onClick={() => handleEditItem(itemIndex)}
+                          onClick={handleEditItem}
                           disabled={
                             isSubmitting ||
                             !form.watch(`deliveryOrderSections.${index}.deliveryOrderItems.${-1}.taluka`) ||
