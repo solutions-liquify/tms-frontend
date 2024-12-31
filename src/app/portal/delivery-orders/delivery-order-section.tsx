@@ -198,7 +198,7 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
 
       <table className="min-w-full divide-y divide-gray-300">
         <thead>
-          <tr className="text-xs font-semibold text-gray-800">
+          <tr className="text-sm font-semibold text-gray-800">
             <th scope="col" className="whitespace-nowrap py-1 pl-4 pr-3 text-left  sm:pl-0">
               #
             </th>
@@ -234,7 +234,7 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
             </th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-200 bg-white text-xs">
+        <tbody className="divide-y divide-gray-200 bg-white text-sm">
           {fields.map((item, itemIndex) => (
             <tr key={item.id} className="cursor-pointer hover:bg-gray-100">
               <td className="whitespace-nowrap py-1 pl-4 pr-3 text-gray-500 sm:pl-0">{itemIndex + 1}</td>
@@ -311,7 +311,7 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
             </tr>
           ))}
 
-          <tr className="bg-gray-50 text-xs">
+          <tr className="bg-gray-50 text-sm">
             <td className="whitespace-nowrap py-2 pl-4 pr-3 font-semibold text-gray-900 sm:pl-2" colSpan={4}>
               Total
             </td>
