@@ -100,8 +100,8 @@ export default function DeliveryOrderForm({ enableEdit, deliveryOrder }: Deliver
   })
 
   const onSubmit = (data: TDeliveryOrder) => {
-    // mutation.mutate(data)
-    console.log(data)
+    mutation.mutate(data)
+    // console.log(data)
   }
 
   const onFormError = (errors: any) => {
