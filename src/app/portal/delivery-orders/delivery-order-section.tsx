@@ -27,7 +27,7 @@ interface DeliveryOrderSectionProps {
 export default function DeliveryOrderSection({ index, removeSection, isLoading, editMode, form }: DeliveryOrderSectionProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [activeItemIndex, setActiveItemIndex] = useState<number | null>(null)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
 
   const districtsQuery = useQuery<string[]>({
     queryKey: ['districts'],
@@ -95,19 +95,9 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
     form.unregister(`deliveryOrderSections.${index}.deliveryOrderItems.${-1}`)
   }
 
-  const handleEditItem = () => {
-    if (isSubmitting) return
-    setIsSubmitting(true)
-
-    if (activeItemIndex) {
-      form.setValue(
-        `deliveryOrderSections.${index}.deliveryOrderItems.${activeItemIndex}`,
-        form.getValues(`deliveryOrderSections.${index}.deliveryOrderItems.${-1}`),
-      )
-      setActiveItemIndex(null)
-    }
-    setIsSubmitting(false)
-    setIsDialogOpen(false)
+  const handleEditItem = (itemIndex: number) => {
+    form.setValue(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}`, form.getValues(`deliveryOrderSections.${index}.deliveryOrderItems.${-1}`))
+    setIsEditDialogOpen(false)
     form.unregister(`deliveryOrderSections.${index}.deliveryOrderItems.${-1}`)
   }
 
@@ -261,6 +251,59 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
               <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-900 capitalize">{item.status}</td>
               <td className="relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium ">
                 <div className="flex justify-end items-center space-x-2">
+                  <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button
+                        type="button"
+                        size={'icon'}
+                        variant={'ghost'}
+                        onClick={() => {
+                          setIsEditDialogOpen(true)
+                          form.setValue(`deliveryOrderSections.${index}.deliveryOrderItems.${-1}`, {
+                            quantity: 0,
+                            rate: 0,
+                            deliveredQuantity: 0,
+                            status: 'pending',
+                            inProgressQuantity: 0,
+                          })
+                        }}
+                      >
+                        <PencilIcon className="w-4 h-4 text-blue-500 cursor-pointer" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="overflow-y-auto w-full">
+                      <DialogHeader className="px-4">
+                        <DialogTitle>Edit Delivery Order Item</DialogTitle>
+                      </DialogHeader>
+                      <DeliveryOrderItem index={index} itemIndex={-1} form={form} district={form.getValues(`deliveryOrderSections.${index}.district`)} />
+                      <DialogFooter className="px-4">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          onClick={() => {
+                            setIsEditDialogOpen(false)
+                            form.unregister(`deliveryOrderSections.${index}.deliveryOrderItems.${-1}`)
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          type="button"
+                          onClick={() => handleEditItem(itemIndex)}
+                          disabled={
+                            isSubmitting ||
+                            !form.watch(`deliveryOrderSections.${index}.deliveryOrderItems.${-1}.taluka`) ||
+                            !form.watch(`deliveryOrderSections.${index}.deliveryOrderItems.${-1}.locationId`) ||
+                            !form.watch(`deliveryOrderSections.${index}.deliveryOrderItems.${-1}.materialId`) ||
+                            !form.watch(`deliveryOrderSections.${index}.deliveryOrderItems.${-1}.quantity`)
+                          }
+                        >
+                          Add
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+
                   <Button type="button" size="icon" onClick={() => remove(itemIndex)} disabled={isLoading || !editMode} variant="ghost">
                     <Trash2Icon className="w-4 h-4 text-red-500 cursor-pointer" />
                   </Button>
