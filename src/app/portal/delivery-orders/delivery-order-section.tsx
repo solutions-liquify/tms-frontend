@@ -5,16 +5,15 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogT
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { listDistricts, listLocations, listMaterials, listTalukas } from '@/lib/actions'
 import { TDeliveryOrder, TDeliveryOrderSection } from '@/schemas/delivery-order-schema'
+import { TLocation } from '@/schemas/location-schema'
+import { TMaterial } from '@/schemas/material-schema'
 import { useQuery } from '@tanstack/react-query'
 import { Trash2Icon } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useFieldArray, UseFormReturn } from 'react-hook-form'
 import { DeliveryOrderItem } from './delivery-order-item'
-import { TMaterial } from '@/schemas/material-schema'
-import { TLocation } from '@/schemas/location-schema'
 
 interface DeliveryOrderSectionProps {
   section: TDeliveryOrderSection
@@ -35,15 +34,6 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
     initialData: [],
   })
 
-  const talukasQuery = useQuery<string[]>({
-    queryKey: ['talukas', form.getValues(`deliveryOrderSections.${index}.district`)],
-    queryFn: () => {
-      const district = form.getValues(`deliveryOrderSections.${index}.district`)
-      return listTalukas({ districts: district ? [district] : [] })
-    },
-    initialData: [],
-  })
-
   const materialsQuery = useQuery<TMaterial[]>({
     queryKey: ['materials'],
     queryFn: () => listMaterials(),
@@ -60,6 +50,21 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
     control: form.control,
     name: `deliveryOrderSections.${index}.deliveryOrderItems`,
   })
+  useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
+      if (name?.startsWith(`deliveryOrderSections.${index}.deliveryOrderItems`)) {
+        const totalQuantity = value.deliveryOrderSections?.[index]?.deliveryOrderItems?.reduce((acc, item) => acc + (item?.quantity || 0), 0) || 0
+        const totalPendingQuantity = value.deliveryOrderSections?.[index]?.deliveryOrderItems?.reduce((acc, item) => acc + (item?.pendingQuantity || 0), 0) || 0
+        const totalInProgressQuantity =
+          value.deliveryOrderSections?.[index]?.deliveryOrderItems?.reduce((acc, item) => acc + (item?.inProgressQuantity || 0), 0) || 0
+        form.setValue(`deliveryOrderSections.${index}.totalQuantity`, totalQuantity)
+        form.setValue(`deliveryOrderSections.${index}.totalPendingQuantity`, totalPendingQuantity)
+        form.setValue(`deliveryOrderSections.${index}.totalInProgressQuantity`, totalInProgressQuantity)
+      }
+    })
+    return () => subscription.unsubscribe()
+  }, [form, index])
+
   const handleSaveItem = () => {
     if (isSubmitting) return
     setIsSubmitting(true)
@@ -118,84 +123,143 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
           />
         </div>
 
-        <div className="flex justify-end items-center">
+        <div className="flex justify-end items-center space-x-2">
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button
+                type="button"
+                disabled={isLoading || !editMode || !form.getValues(`deliveryOrderSections.${index}.district`)}
+                size={'sm'}
+                variant={'outline'}
+              >
+                Add Item
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add Delivery Order Item</DialogTitle>
+              </DialogHeader>
+              <DeliveryOrderItem index={index} itemIndex={-1} form={form} district={form.getValues(`deliveryOrderSections.${index}.district`)} />
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => {
+                    setIsDialogOpen(false)
+                    form.unregister(`deliveryOrderSections.${index}.deliveryOrderItems.${-1}`)
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="button"
+                  onClick={handleSaveItem}
+                  disabled={
+                    isSubmitting ||
+                    !form.watch(`deliveryOrderSections.${index}.deliveryOrderItems.${-1}.taluka`) ||
+                    !form.watch(`deliveryOrderSections.${index}.deliveryOrderItems.${-1}.locationId`) ||
+                    !form.watch(`deliveryOrderSections.${index}.deliveryOrderItems.${-1}.materialId`) ||
+                    !form.watch(`deliveryOrderSections.${index}.deliveryOrderItems.${-1}.quantity`)
+                  }
+                >
+                  Add
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
           <Button type="button" size="icon" onClick={() => removeSection(index)} disabled={isLoading || !editMode} variant="ghost">
             <Trash2Icon className="w-4 h-4 text-red-500 cursor-pointer" />
           </Button>
         </div>
       </div>
 
-      <div className="my-4" />
+      <div className="my-2" />
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>#</TableHead>
-            <TableHead>Taluka</TableHead>
-            <TableHead>Location</TableHead>
-            <TableHead>Material</TableHead>
-            <TableHead>Quantity</TableHead>
-
-            <TableHead>Rate</TableHead>
-            <TableHead>Due Date</TableHead>
-            <TableHead>Pending</TableHead>
-            <TableHead>In Progress</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead></TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
+      <table className="min-w-full divide-y divide-gray-300">
+        <thead>
+          <tr>
+            <th scope="col" className="whitespace-nowrap py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+              #
+            </th>
+            <th scope="col" className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+              Taluka
+            </th>
+            <th scope="col" className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+              Location
+            </th>
+            <th scope="col" className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+              Material
+            </th>
+            <th scope="col" className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+              Quantity
+            </th>
+            <th scope="col" className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+              Rate
+            </th>
+            <th scope="col" className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+              Due Date
+            </th>
+            <th scope="col" className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+              Pending
+            </th>
+            <th scope="col" className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+              In Progress
+            </th>
+            <th scope="col" className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+              Status
+            </th>
+            <th scope="col" className="relative whitespace-nowrap py-3.5 pl-3 pr-4 sm:pr-0">
+              <span className="sr-only">Remove</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-200 bg-white">
           {fields.map((item, itemIndex) => (
-            <TableRow key={item.id} className="cursor-pointer">
-              <TableCell className="w-1/12">{itemIndex + 1}</TableCell>
-              <TableCell className="w-1/12">{item.taluka}</TableCell>
-              <TableCell className="w-1/12">{locationsQuery.data?.find((location) => location.id === item.locationId)?.name || item.locationId}</TableCell>
-              <TableCell className="w-1/12">{materialsQuery.data?.find((material) => material.id === item.materialId)?.name || item.materialId}</TableCell>
-              <TableCell className="w-1/12">
-                {item.quantity} {item.unit}
-              </TableCell>
-              <TableCell className="w-1/12">{item.rate}</TableCell>
-              <TableCell className="w-1/12">{item.dueDate ? new Date(item.dueDate * 1000).toLocaleDateString('en-GB') : ''}</TableCell>
-              <TableCell className="w-1/12">{item.pendingQuantity}</TableCell>
-              <TableCell className="w-1/12">{item.deliveredQuantity}</TableCell>
-              <TableCell className="w-1/12 capitalize">{item.status}</TableCell>
-              <TableCell className="w-1/12 text-right">
-                <Button type="button" size="icon" onClick={() => remove(itemIndex)} disabled={isLoading || !editMode} variant="ghost">
+            <tr key={item.id} className="cursor-pointer hover:bg-gray-100">
+              <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm text-gray-500 sm:pl-0">{itemIndex + 1}</td>
+              <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-900">{item.taluka}</td>
+              <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-900">
+                {locationsQuery.data?.find((location) => location.id === item.locationId)?.name || item.locationId}
+              </td>
+              <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-900">
+                {materialsQuery.data?.find((material) => material.id === item.materialId)?.name || item.materialId}
+              </td>
+              <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-900">{item.quantity}</td>
+              <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-900">{item.rate}</td>
+              <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-900">
+                {item.dueDate ? new Date(item.dueDate * 1000).toLocaleDateString('en-GB') : ''}
+              </td>
+              <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-900">{item.pendingQuantity}</td>
+              <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-900">{item.inProgressQuantity}</td>
+              <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-900 capitalize">{item.status}</td>
+              <td className="relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                <button type="button" className="text-red-600 hover:text-red-900" onClick={() => remove(itemIndex)} disabled={isLoading || !editMode}>
                   <Trash2Icon className="w-4 h-4 text-red-500 cursor-pointer" />
-                </Button>
-              </TableCell>
-            </TableRow>
+                </button>
+              </td>
+            </tr>
           ))}
-        </TableBody>
-      </Table>
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogTrigger asChild>
-          <Button className="mt-4" type="button" disabled={isLoading || !editMode}>
-            Add Delivery Order Item
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add Delivery Order Item</DialogTitle>
-          </DialogHeader>
-          <DeliveryOrderItem index={index} itemIndex={-1} form={form} district={form.getValues(`deliveryOrderSections.${index}.district`)} />
-          <DialogFooter>
-            <Button
-              type="button"
-              onClick={() => {
-                setIsDialogOpen(false)
-                form.unregister(`deliveryOrderSections.${index}.deliveryOrderItems.${-1}`)
-              }}
-            >
-              Cancel
-            </Button>
-            <Button type="button" onClick={handleSaveItem} disabled={isSubmitting}>
-              Save changes
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          <tr className="bg-gray-50">
+            <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-semibold text-gray-900 sm:pl-2" colSpan={4}>
+              Total
+            </td>
+            <td className="whitespace-nowrap px-2 py-2 text-sm font-semibold text-gray-900">
+              {form.getValues(`deliveryOrderSections.${index}.totalQuantity`)}
+            </td>
+            <td className="whitespace-nowrap px-2 py-2 text-sm font-semibold text-gray-900"></td>
+            <td className="whitespace-nowrap px-2 py-2 text-sm font-semibold text-gray-900"></td>
+            <td className="whitespace-nowrap px-2 py-2 text-sm font-semibold text-gray-900">
+              {form.getValues(`deliveryOrderSections.${index}.totalPendingQuantity`)}
+            </td>
+            <td className="whitespace-nowrap px-2 py-2 text-sm font-semibold text-gray-900">
+              {form.getValues(`deliveryOrderSections.${index}.totalInProgressQuantity`)}
+            </td>
+            <td className="whitespace-nowrap px-2 py-2 text-sm font-semibold text-gray-900"></td>
+            <td className="relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium sm:pr-0"></td>
+          </tr>
+        </tbody>
+      </table>
 
       <Separator className="my-4" />
     </div>

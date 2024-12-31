@@ -42,9 +42,7 @@ export const DeliveryOrderItem = ({ index, itemIndex, form, district }: Delivery
     if (!form.getValues(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.pendingQuantity`)) {
       form.setValue(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.pendingQuantity`, 0)
     }
-    if (!form.getValues(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.deliveredQuantity`)) {
-      form.setValue(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.deliveredQuantity`, 0)
-    }
+
     if (!form.getValues(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.inProgressQuantity`)) {
       form.setValue(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.inProgressQuantity`, 0)
     }
@@ -139,29 +137,6 @@ export const DeliveryOrderItem = ({ index, itemIndex, form, district }: Delivery
             <FormLabel>Quantity</FormLabel>
             <FormControl>
               <Input type="number" {...field} onChange={(e) => field.onChange(parseFloat(e.target.value))} value={field.value ?? ''} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name={`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.unit`}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Unit</FormLabel>
-            <FormControl>
-              <Select {...field} onValueChange={field.onChange} value={field.value ?? ''}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a unit" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="mt">mt</SelectItem>
-                  <SelectItem value="kg">kg</SelectItem>
-                  <SelectItem value="unit">unit</SelectItem>
-                </SelectContent>
-              </Select>
             </FormControl>
             <FormMessage />
           </FormItem>
