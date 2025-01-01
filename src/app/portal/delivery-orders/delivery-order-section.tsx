@@ -89,6 +89,7 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
         deliveredQuantity: 0,
         status: '',
         inProgressQuantity: 0,
+        district: form.getValues(`deliveryOrderSections.${index}.district`),
       },
     )
 
@@ -151,6 +152,7 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
                     deliveredQuantity: 0,
                     status: 'pending',
                     inProgressQuantity: 0,
+                    district: form.getValues(`deliveryOrderSections.${index}.district`),
                   })
                 }}
               >
