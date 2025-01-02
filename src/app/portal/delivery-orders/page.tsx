@@ -18,6 +18,10 @@ export default function DeliveryOrders() {
     queryFn: () =>
       listDeliveryOrders({
         search: search,
+        page: 1,
+        pageSize: 10,
+        partyIds: [],
+        statuses: [],
       }),
   })
 

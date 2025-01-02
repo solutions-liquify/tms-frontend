@@ -8,7 +8,6 @@ import { UseFormReturn } from 'react-hook-form'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { TMaterial } from '@/schemas/material-schema'
 import { TLocation } from '@/schemas/location-schema'
-import { useEffect } from 'react'
 import { Input } from '@/components/ui/input'
 
 interface DeliveryOrderItemProps {

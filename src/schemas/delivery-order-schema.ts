@@ -46,6 +46,8 @@ export type ListDeliveryOrdersInput = {
   search?: string | null
   page?: number
   pageSize?: number
+  statuses?: string[] | null
+  partyIds?: string[] | null
 }
 
 export type ListDeliveryOrderItem = {
