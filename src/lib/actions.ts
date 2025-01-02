@@ -9,6 +9,7 @@ import { ListEmployeesInput, TEmployee } from '@/schemas/employee-schema'
 import { TLogin } from '@/schemas/auth-schema'
 import { authService } from '@/lib/auth'
 import { ListDeliveryOrdersInput, TDeliveryOrder } from '@/schemas/delivery-order-schema'
+import { ListDeliveryChallansInput, TDeliveryChallan } from '@/schemas/delivery-challan-schema'
 
 // Godown Location API
 export const createLocation = async (data: TLocation) => {
@@ -269,6 +270,57 @@ export const getDeliveryOrder = async (id: string) => {
 export const listDeliveryOrders = async (data: ListDeliveryOrdersInput) => {
   const accessToken = await authService.getAccessToken()
   const response = await axios.post(`${getBackendUrl()}/api/v1/delivery-orders/list`, data, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
+  return response.data
+}
+
+// Delivery Challan API
+export const createDeliveryChallan = async (data: TDeliveryChallan) => {
+  const accessToken = await authService.getAccessToken()
+  const response = await axios.post(`${getBackendUrl()}/api/v1/delivery-challans/create`, data, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
+  return response.data
+}
+
+export const createDeliveryChallanFromDeliveryOrder = async (deliveryOrderId: string) => {
+  const accessToken = await authService.getAccessToken()
+  const response = await axios.get(`${getBackendUrl()}/api/v1/delivery-challans/create/from-delivery-order/${deliveryOrderId}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
+  return response.data
+}
+
+export const updateDeliveryChallan = async (data: TDeliveryChallan) => {
+  const accessToken = await authService.getAccessToken()
+  const response = await axios.post(`${getBackendUrl()}/api/v1/delivery-challans/update`, data, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
+  return response.data
+}
+
+export const getDeliveryChallan = async (id: string) => {
+  const accessToken = await authService.getAccessToken()
+  const response = await axios.get(`${getBackendUrl()}/api/v1/delivery-challans/get/${id}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
+  return response.data
+}
+
+export const listDeliveryChallans = async (data: ListDeliveryChallansInput) => {
+  const accessToken = await authService.getAccessToken()
+  const response = await axios.post(`${getBackendUrl()}/api/v1/delivery-challans/list`, data, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },

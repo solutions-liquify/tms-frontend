@@ -2,7 +2,7 @@
 
 import { TDeliveryOrder } from '@/schemas/delivery-order-schema'
 import { useRouter } from 'next/navigation'
-import { useForm, useFieldArray } from 'react-hook-form'
+import { useForm, useFieldArray, FieldErrors } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { DeliveryOrderSchema } from '@/schemas/delivery-order-schema'
 import { Button } from '@/components/ui/button'
@@ -11,7 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { toast } from 'sonner'
-import { createDeliveryOrder, listParties, updateDeliveryOrder } from '@/lib/actions'
+import { createDeliveryChallanFromDeliveryOrder, createDeliveryOrder, listParties, updateDeliveryOrder } from '@/lib/actions'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { TParty } from '@/schemas/party-schema'
@@ -39,11 +39,7 @@ export default function DeliveryOrderForm({ enableEdit, deliveryOrder }: Deliver
     },
   })
 
-  const {
-    fields: sectionFields,
-    append: appendSection,
-    remove: removeSection,
-  } = useFieldArray({
+  const { append: appendSection, remove: removeSection } = useFieldArray({
     control: form.control,
     name: 'deliveryOrderSections',
   })
@@ -68,23 +64,26 @@ export default function DeliveryOrderForm({ enableEdit, deliveryOrder }: Deliver
     initialData: [],
   })
 
-  const mutation = useMutation({
+  const deliveryOrderMutation = useMutation({
     mutationFn: async (data: TDeliveryOrder) => {
       setIsLoading(true)
+      let response
       if (data.id) {
-        await updateDeliveryOrder(data)
+        response = await updateDeliveryOrder(data)
         await queryClient.invalidateQueries({
           queryKey: ['deliveryOrder', data.id],
         })
       } else {
-        await createDeliveryOrder(data)
+        response = await createDeliveryOrder(data)
       }
+      return response
     },
-    onSuccess: async () => {
+    onSuccess: async (response) => {
       try {
         await queryClient.invalidateQueries({ queryKey: ['deliveryOrders'] })
+        form.reset(response)
+        setEditMode(false)
         toast.success('Delivery Order saved successfully')
-        router.back()
       } catch (error) {
         console.log(error)
         toast.error('Error invalidating cache.')
@@ -99,13 +98,43 @@ export default function DeliveryOrderForm({ enableEdit, deliveryOrder }: Deliver
     },
   })
 
+  const deliveryChallanMutation = useMutation({
+    mutationFn: async (deliveryOrderId: string) => {
+      setIsLoading(true)
+      const response = await createDeliveryChallanFromDeliveryOrder(deliveryOrderId)
+      return response
+    },
+    onSuccess: async (response) => {
+      try {
+        await queryClient.invalidateQueries({ queryKey: ['deliveryChallans'] })
+        toast.success('Delivery Challan created successfully')
+        // TODO: redirect to delivery challan page
+      } catch (error) {
+        console.log(error)
+        toast.error('Error invalidating cache.')
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    onError: (error) => {
+      setIsLoading(false)
+      console.log(error)
+      toast.error('An error occurred while creating the delivery challan. Please try again later.')
+    },
+  })
+
   const onSubmit = (data: TDeliveryOrder) => {
-    mutation.mutate(data)
+    deliveryOrderMutation.mutate(data)
     // console.log(data)
   }
 
-  const onFormError = (errors: any) => {
+  const onFormError = (errors: FieldErrors<TDeliveryOrder>) => {
     console.log(errors)
+  }
+
+  const handleCreateDeliveryChallan = async () => {
+    await deliveryOrderMutation.mutateAsync(form.getValues())
+    await deliveryChallanMutation.mutateAsync(form.getValues('id') ?? '')
   }
 
   return (
@@ -220,6 +249,12 @@ export default function DeliveryOrderForm({ enableEdit, deliveryOrder }: Deliver
 
         <Button type="button" onClick={addSection} size="sm" disabled={isLoading || !editMode}>
           Add Section
+        </Button>
+
+        <Separator className="my-4" />
+
+        <Button type="button" onClick={handleCreateDeliveryChallan} size="sm" disabled={isLoading || !editMode}>
+          Create Delivery Challan
         </Button>
       </form>
     </Form>
