@@ -16,7 +16,7 @@ export const DeliveryChallanItemSchema = z.object({
 
 export const DeliveryChallanSchema = z.object({
   id: z.string().optional().nullable(),
-  deliveryOrderId: z.string().optional().nullable(),
+  deliveryOrderId: z.string(),
   dateOfChallan: z.number().optional().nullable(),
   status: z.string().optional().nullable(),
   partyName: z.string().optional().nullable(),

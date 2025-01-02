@@ -1,6 +1,6 @@
 'use client'
 
-import { GalleryVerticalEnd, Home, MapPin, Package, Package2, User, Users2, LogOut } from 'lucide-react'
+import { GalleryVerticalEnd, Home, MapPin, Package, Package2, User, Users2, LogOut, BookText } from 'lucide-react'
 import Link from 'next/link'
 import { redirect, usePathname } from 'next/navigation'
 import {
@@ -30,6 +30,11 @@ export const items = [
     title: 'Delivery Orders',
     url: '/portal/delivery-orders',
     icon: Package2,
+  },
+  {
+    title: 'Delivery Challans',
+    url: '/portal/delivery-challans',
+    icon: BookText,
   },
 ]
 

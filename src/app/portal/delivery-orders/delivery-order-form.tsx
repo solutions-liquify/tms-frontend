@@ -109,6 +109,7 @@ export default function DeliveryOrderForm({ enableEdit, deliveryOrder }: Deliver
         await queryClient.invalidateQueries({ queryKey: ['deliveryChallans'] })
         toast.success('Delivery Challan created successfully')
         // TODO: redirect to delivery challan page
+        router.push(`/portal/delivery-challans/${response.id}`)
       } catch (error) {
         console.log(error)
         toast.error('Error invalidating cache.')
