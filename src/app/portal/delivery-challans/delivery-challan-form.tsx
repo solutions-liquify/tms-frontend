@@ -1,5 +1,6 @@
 'use client'
 
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
@@ -134,7 +135,12 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit, onFormError)}>
         <div className="flex justify-between items-center">
-          <p className="font-semibold text-sm text-muted-foreground">Delivery Challan Details</p>
+          <div className="flex items-center gap-2">
+            <p className="font-semibold text-sm text-muted-foreground">Delivery Challan Details</p>
+            <Badge variant={'outline'} className="capitalize bg-teal-200 text-teal-800">
+              {deliveryChallan.status}
+            </Badge>
+          </div>
 
           {editMode && (
             <div className="flex space-x-2">
@@ -176,7 +182,7 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
             name="dateOfChallan"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Date of Contract</FormLabel>
+                <FormLabel>Date of Challan</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
