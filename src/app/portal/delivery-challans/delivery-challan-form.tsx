@@ -1,12 +1,17 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { updateDeliveryChallan } from '@/lib/actions'
-import { DeliveryChallanSchema, TDeliveryChallan } from '@/schemas/delivery-challan-schema'
+import { Separator } from '@/components/ui/separator'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { listDeliveryOrderItemsForDeliveryOrderId, updateDeliveryChallan } from '@/lib/actions'
+import { DeliveryChallanSchema, TDeliveryChallan, TDeliveryChallanItem } from '@/schemas/delivery-challan-schema'
+import { TDeliverOrderItemMetadata } from '@/schemas/delivery-order-schema'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { Trash2Icon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { FieldErrors, useFieldArray, useForm } from 'react-hook-form'
@@ -20,6 +25,7 @@ interface DeliveryChallanFormProps {
 export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: DeliveryChallanFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [editMode, setEditMode] = useState(enableEdit)
+  const [isSelectDeliveryOrderItemOpen, setIsSelectDeliveryOrderItemOpen] = useState(false)
   const queryClient = useQueryClient()
   const router = useRouter()
 
@@ -28,29 +34,20 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
     defaultValues: deliveryChallan,
   })
 
-  const { append: appendItem, remove: removeItem } = useFieldArray({
+  const { fields: deliveryChallanItems, remove: removeItem } = useFieldArray({
     control: form.control,
     name: 'deliveryChallanItems',
   })
 
-  const addItem = () => {
-    appendItem({
-      id: '',
-      deliveryChallanId: deliveryChallan.id,
-      deliveryOrderItemId: '',
-      district: '',
-      taluka: '',
-      locationName: '',
-      materialName: '',
-      quantity: 0,
-      rate: 0,
-      deliveringQuantity: 0,
-    })
-  }
-
   const removeItemByIndex = (index: number) => {
     removeItem(index)
   }
+
+  const deliveryOrderItemsQuery = useQuery({
+    queryKey: ['deliveryOrderItems', deliveryChallan.deliveryOrderId],
+    queryFn: () => listDeliveryOrderItemsForDeliveryOrderId(deliveryChallan.deliveryOrderId),
+    initialData: [],
+  })
 
   const deliveryChallanMutation = useMutation({
     mutationFn: async (data: TDeliveryChallan) => {
@@ -86,6 +83,38 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
 
   const onFormError = (errors: FieldErrors<TDeliveryChallan>) => {
     console.log(errors)
+  }
+
+  const handleSelectDeliveryOrderItem = (item: TDeliverOrderItemMetadata) => {
+    const currentItems = form.getValues('deliveryChallanItems')
+    const itemIndex = currentItems.findIndex((i: TDeliveryChallanItem) => i.deliveryOrderItemId === item.id)
+
+    if (itemIndex !== -1) {
+      currentItems.splice(itemIndex, 1)
+    } else {
+      const newItem: TDeliveryChallanItem = {
+        id: null,
+        deliveryChallanId: form.getValues('id'),
+        deliveryOrderItemId: item.id,
+        district: item.district,
+        taluka: item.taluka,
+        locationName: item.locationName,
+        materialName: item.materialName,
+        quantity: item.quantity,
+        deliveredQuantity: item.deliveredQuantity,
+        inProgressQuantity: item.inProgressQuantity,
+        rate: item.rate ?? 0.0,
+        dueDate: item.dueDate,
+        deliveringQuantity: 0.0,
+      }
+      currentItems.push(newItem)
+    }
+
+    form.setValue('deliveryChallanItems', currentItems)
+  }
+
+  if (deliveryOrderItemsQuery.isLoading) {
+    return <div>Loading...</div>
   }
 
   return (
@@ -177,6 +206,139 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
             )}
           />
         </div>
+
+        <Separator className="my-4" />
+        <div className="flex justify-between items-center">
+          <p className="font-semibold text-sm text-muted-foreground">Delivery Challan Items</p>
+          <Dialog open={isSelectDeliveryOrderItemOpen} onOpenChange={setIsSelectDeliveryOrderItemOpen}>
+            <DialogTrigger asChild>
+              <Button type="button" size={'sm'} variant={'outline'} onClick={() => setIsSelectDeliveryOrderItemOpen(true)}>
+                Add Item
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="overflow-y-auto max-w-7xl max-h-[80vh]">
+              <DialogHeader>
+                <DialogTitle>Select Delivery Item</DialogTitle>
+              </DialogHeader>
+
+              <div>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead></TableHead>
+                      <TableHead>District</TableHead>
+                      <TableHead>Taluka</TableHead>
+                      <TableHead>Location Name</TableHead>
+                      <TableHead>Material Name</TableHead>
+                      <TableHead>Quantity</TableHead>
+                      <TableHead>Rate</TableHead>
+                      <TableHead>Due Date</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {deliveryOrderItemsQuery.data?.map((item: TDeliverOrderItemMetadata) => {
+                      return (
+                        <TableRow
+                          key={item.id}
+                          className={`cursor-pointer ${form.getValues('deliveryChallanItems').some((challanItem) => challanItem.deliveryOrderItemId === item.id) ? 'bg-gray-200' : ''}`}
+                          onClick={() => handleSelectDeliveryOrderItem(item)}
+                        >
+                          <TableCell>
+                            <input
+                              type="checkbox"
+                              checked={form.getValues('deliveryChallanItems').some((challanItem) => challanItem.deliveryOrderItemId === item.id)}
+                              readOnly
+                            />
+                          </TableCell>
+                          <TableCell>{item.district}</TableCell>
+                          <TableCell>{item.taluka}</TableCell>
+                          <TableCell>{item.locationName}</TableCell>
+                          <TableCell>{item.materialName}</TableCell>
+                          <TableCell>
+                            {item.quantity} | {item.deliveredQuantity} | {item.inProgressQuantity}
+                          </TableCell>
+                          <TableCell>{item.rate}</TableCell>
+                          <TableCell>{item.dueDate ? new Date(item.dueDate).toLocaleDateString('en-GB') : '-'}</TableCell>
+                        </TableRow>
+                      )
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+
+              <DialogFooter className="px-4">
+                <Button type="button" onClick={() => setIsSelectDeliveryOrderItemOpen(false)}>
+                  Done
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        <div className="my-4" />
+
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>#</TableHead>
+              <TableHead className="w-1/12">District</TableHead>
+              <TableHead className="w-1/12">Taluka</TableHead>
+              <TableHead className="w-2/12">Location</TableHead>
+              <TableHead className="w-1/12">Material</TableHead>
+              <TableHead className="w-2/12">Quantity</TableHead>
+              <TableHead className="w-1/12">Rate</TableHead>
+              <TableHead className="w-1/12">Due Date</TableHead>
+              <TableHead className="w-1/12">Delivering Quantity</TableHead>
+              <TableHead></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {deliveryChallanItems.map((item: TDeliveryChallanItem, index: number) => {
+              return (
+                <TableRow key={item.deliveryOrderItemId}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{item.district}</TableCell>
+                  <TableCell>{item.taluka}</TableCell>
+                  <TableCell>{item.locationName}</TableCell>
+                  <TableCell>{item.materialName}</TableCell>
+                  <TableCell>
+                    {item.quantity} | {item.deliveredQuantity} | {item.inProgressQuantity}
+                  </TableCell>
+                  <TableCell>{item.rate}</TableCell>
+                  <TableCell>{item.dueDate ? new Date(item.dueDate).toLocaleDateString('en-GB') : '-'}</TableCell>
+                  <TableCell>
+                    <FormField
+                      control={form.control}
+                      name={`deliveryChallanItems.${index}.deliveringQuantity`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type="number"
+                              onChange={(e) => {
+                                const value = parseFloat(e.target.value)
+                                field.onChange(value)
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Button type="button" size={'icon'} variant={'ghost'} onClick={() => removeItemByIndex(index)}>
+                      <Trash2Icon className="w-4 h-4 text-red-500" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              )
+            })}
+          </TableBody>
+        </Table>
+
+        <Separator className="my-4" />
       </form>
     </Form>
   )

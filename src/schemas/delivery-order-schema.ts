@@ -57,3 +57,17 @@ export type ListDeliveryOrderItem = {
   status: string
   grandTotalQuantity: number
 }
+
+export type TDeliverOrderItemMetadata = {
+  id: string
+  district: string
+  taluka: string
+  locationName: string
+  materialName: string
+  quantity: number
+  status: string
+  rate?: number | null
+  dueDate?: number | null
+  deliveredQuantity: number
+  inProgressQuantity: number
+}

@@ -11,6 +11,12 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<'input'>>(
         className,
       )}
       ref={ref}
+      step="any"
+      onKeyDown={(e) => {
+        if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+          e.preventDefault()
+        }
+      }}
       {...props}
     />
   )

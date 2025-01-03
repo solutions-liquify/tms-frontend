@@ -9,6 +9,8 @@ export const DeliveryChallanItemSchema = z.object({
   locationName: z.string().optional().nullable(),
   materialName: z.string().optional().nullable(),
   quantity: z.number().default(0.0),
+  deliveredQuantity: z.number().default(0.0),
+  inProgressQuantity: z.number().default(0.0),
   rate: z.number().default(0.0),
   dueDate: z.number().optional().nullable(),
   deliveringQuantity: z.number().default(0.0),
