@@ -1,27 +1,30 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useQuery } from '@tanstack/react-query'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { listDeliveryChallans } from '@/lib/actions'
 import { ListDeliveryChallanOutputRecord } from '@/schemas/delivery-challan-schema'
+import { useQuery } from '@tanstack/react-query'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
 export default function DeliveryChallans() {
   const router = useRouter()
   const [search, setSearch] = useState<string>('')
+  const [page, setPage] = useState(1)
+  const [size, setSize] = useState(10)
+  const [deliveryOrderIds, setDeliveryOrderIds] = useState<string[]>([])
 
   const deliveryChallansQuery = useQuery<ListDeliveryChallanOutputRecord[]>({
-    queryKey: ['deliveryChallans'],
+    queryKey: ['deliveryChallans', search, page, size, deliveryOrderIds],
     queryFn: () =>
       listDeliveryChallans({
         search: search,
-        page: 1,
-        size: 10,
-        deliveryOrderIds: ['ffcdfabb-8124-4654-a60c-72c32b631129'],
+        page: page,
+        size: size,
+        deliveryOrderIds: deliveryOrderIds,
       }),
+    initialData: [],
   })
 
   if (deliveryChallansQuery.isLoading) {
@@ -62,6 +65,22 @@ export default function DeliveryChallans() {
           ))}
         </TableBody>
       </Table>
+
+      <div className={'my-4 flex justify-end items-center space-x-2'}>
+        <Button onClick={() => setPage(page - 1)} size={'sm'} variant={'outline'} disabled={page === 1} className={'disabled:opacity-30'}>
+          Previous
+        </Button>
+        <p className={'text-xs'}>Page: {page} </p>
+        <Button
+          onClick={() => setPage(page + 1)}
+          size={'sm'}
+          variant={'outline'}
+          disabled={deliveryChallansQuery.data?.length < size}
+          className={'disabled:opacity-30'}
+        >
+          Next
+        </Button>
+      </div>
     </div>
   )
 }
