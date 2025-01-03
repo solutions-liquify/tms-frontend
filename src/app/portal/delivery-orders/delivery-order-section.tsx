@@ -259,6 +259,7 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
                         type="button"
                         size={'icon'}
                         variant={'ghost'}
+                        disabled={isLoading || !editMode}
                         onClick={() => {
                           setActiveItemIndex(itemIndex)
                           setIsEditDialogOpen(true)

@@ -11,11 +11,13 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { toast } from 'sonner'
-import { createDeliveryChallanFromDeliveryOrder, createDeliveryOrder, listParties, updateDeliveryOrder } from '@/lib/actions'
+import { createDeliveryChallanFromDeliveryOrder, createDeliveryOrder, listDeliveryChallans, listParties, updateDeliveryOrder } from '@/lib/actions'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { TParty } from '@/schemas/party-schema'
 import DeliveryOrderSection from './delivery-order-section'
+import { ListDeliveryChallanOutputRecord } from '@/schemas/delivery-challan-schema'
+import { Table, TableCell, TableBody, TableHead, TableRow, TableHeader } from '@/components/ui/table'
 
 interface DeliveryOrderFormProps {
   deliveryOrder?: TDeliveryOrder
@@ -62,6 +64,15 @@ export default function DeliveryOrderForm({ enableEdit, deliveryOrder }: Deliver
     queryKey: ['parties'],
     queryFn: () => listParties({}),
     initialData: [],
+  })
+
+  const deliveryChallansQuery = useQuery<ListDeliveryChallanOutputRecord[]>({
+    queryKey: ['deliveryChallans', deliveryOrder?.id],
+    queryFn: () =>
+      listDeliveryChallans({
+        deliveryOrderIds: [deliveryOrder?.id ?? ''],
+      }),
+    enabled: !!deliveryOrder?.id,
   })
 
   const deliveryOrderMutation = useMutation({
@@ -228,6 +239,9 @@ export default function DeliveryOrderForm({ enableEdit, deliveryOrder }: Deliver
 
         <div className="flex justify-between items-center">
           <p className="font-semibold text-sm text-muted-foreground">Delivery Orders Sections</p>
+          <Button type="button" onClick={addSection} size="sm" disabled={isLoading || !editMode}>
+            Add Section
+          </Button>
         </div>
 
         <Separator className="my-4" />
@@ -248,15 +262,51 @@ export default function DeliveryOrderForm({ enableEdit, deliveryOrder }: Deliver
             ))}
         </div>
 
-        <Button type="button" onClick={addSection} size="sm" disabled={isLoading || !editMode}>
-          Add Section
-        </Button>
+        {deliveryOrder?.id && (
+          <>
+            <div className="flex justify-between items-center">
+              <p className="font-semibold text-sm text-muted-foreground">Delivery Challans</p>
 
-        <Separator className="my-4" />
+              <Button type="button" onClick={handleCreateDeliveryChallan} size="sm" disabled={isLoading || !editMode}>
+                Create Delivery Challan
+              </Button>
+            </div>
 
-        <Button type="button" onClick={handleCreateDeliveryChallan} size="sm" disabled={isLoading || !editMode}>
-          Create Delivery Challan
-        </Button>
+            <Separator className="my-4" />
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Sr. No.</TableHead>
+                  <TableHead>DC</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Quantity</TableHead>
+                  <TableHead className="text-center">Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {deliveryChallansQuery.data?.map((deliveryChallan, index) => (
+                  <TableRow
+                    key={deliveryChallan.id}
+                    onClick={() => {
+                      if (editMode) {
+                        const userConfirmed = window.confirm('You have unsaved changes. Do you want to leave without saving?')
+                        if (!userConfirmed) return
+                      }
+                      router.push(`/portal/delivery-challans/${deliveryChallan.id}`)
+                    }}
+                    className="cursor-pointer"
+                  >
+                    <TableCell>{index + 1}</TableCell>
+                    <TableCell>{deliveryChallan.id}</TableCell>
+                    <TableCell>{deliveryChallan.dateOfChallan ? new Date(deliveryChallan.dateOfChallan).toLocaleDateString('en-GB') : ''}</TableCell>
+                    <TableCell>{deliveryChallan.totalDeliveringQuantity}</TableCell>
+                    <TableCell className="text-center capitalize">{deliveryChallan.status}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </>
+        )}
       </form>
     </Form>
   )
