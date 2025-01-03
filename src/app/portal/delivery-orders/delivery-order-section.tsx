@@ -159,7 +159,7 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
                 Add Item
               </Button>
             </DialogTrigger>
-            <DialogContent className="overflow-y-auto w-full h-[80vh]">
+            <DialogContent className="overflow-y-auto w-full max-h-[80vh]">
               <DialogHeader className="px-4">
                 <DialogTitle>Add Delivery Order Item</DialogTitle>
               </DialogHeader>
