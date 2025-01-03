@@ -10,10 +10,10 @@ export const DeliveryChallanItemSchema = z.object({
   materialName: z.string().optional().nullable(),
   quantity: z.number().default(0.0),
   deliveredQuantity: z.number().default(0.0),
-  inProgressQuantity: z.number().default(0.0),
+  inProgressQuantity: z.number(),
   rate: z.number().default(0.0),
   dueDate: z.number().optional().nullable(),
-  deliveringQuantity: z.number().default(0.0),
+  deliveringQuantity: z.number(),
 })
 
 export const DeliveryChallanSchema = z.object({
@@ -35,4 +35,14 @@ export type ListDeliveryChallansInput = {
   search?: string | null
   page?: number
   size?: number
+  deliveryOrderIds?: string[]
+}
+
+export type ListDeliveryChallanOutputRecord = {
+  id: string
+  deliveryOrderId: string
+  dateOfChallan?: number | null
+  status: string
+  partyName: string
+  totalDeliveringQuantity: number
 }

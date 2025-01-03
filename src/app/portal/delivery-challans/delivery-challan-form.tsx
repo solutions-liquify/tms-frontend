@@ -12,11 +12,12 @@ import { DeliveryChallanSchema, TDeliveryChallan, TDeliveryChallanItem } from '@
 import { TDeliverOrderItemMetadata } from '@/schemas/delivery-order-schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Trash2Icon } from 'lucide-react'
+import { CircleAlert, Trash2Icon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { FieldErrors, useFieldArray, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 interface DeliveryChallanFormProps {
   deliveryChallan: TDeliveryChallan
@@ -76,6 +77,7 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
         await queryClient.invalidateQueries({ queryKey: ['deliveryOrders'] })
         form.reset(response)
         setEditMode(false)
+        window.location.reload()
         toast.success('Delivery Challan saved successfully')
       } catch (error) {
         console.log(error)
@@ -102,7 +104,7 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
   const handleSelectDeliveryOrderItem = (item: TDeliverOrderItemMetadata) => {
     const currentItems = form.getValues('deliveryChallanItems')
     const itemIndex = currentItems.findIndex((i: TDeliveryChallanItem) => i.deliveryOrderItemId === item.id)
-
+    console.log(item)
     if (itemIndex !== -1) {
       currentItems.splice(itemIndex, 1)
     } else {
@@ -241,7 +243,7 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {deliveryOrderItemsQuery.data?.map((item: TDeliverOrderItemMetadata) => {
+                    {deliveryOrderItemsQuery.data?.map((item: TDeliverOrderItemMetadata, index: number) => {
                       return (
                         <TableRow
                           key={item.id}
@@ -307,8 +309,27 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
                   <TableCell>{item.locationName}</TableCell>
                   <TableCell>{item.materialName}</TableCell>
                   <TableCell>
-                    {form.getValues('deliveryChallanItems')[index].quantity} | {form.getValues('deliveryChallanItems')[index].deliveredQuantity} |{' '}
-                    {form.getValues('deliveryChallanItems')[index].inProgressQuantity}
+                    <div className="flex items-center gap-2">
+                      {item.quantity} |
+                      {form.formState.dirtyFields.deliveryChallanItems?.[index]?.deliveringQuantity ? (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button variant="ghost" size={'icon'} type="button">
+                                <CircleAlert className="w-4 h-4 text-amber-500" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>This value will be updated on save</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      ) : (
+                        <span>
+                          {item.deliveredQuantity} | {item.inProgressQuantity}
+                        </span>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell>{item.rate}</TableCell>
                   <TableCell>{item.dueDate ? new Date(item.dueDate).toLocaleDateString('en-GB') : '-'}</TableCell>
@@ -325,10 +346,14 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
                               onChange={(e) => {
                                 const value = parseFloat(e.target.value) || 0
                                 field.onChange(value)
+
                                 const currentItems = form.getValues('deliveryChallanItems')
                                 currentItems[index].deliveringQuantity = value
                                 const totalDeliveringQuantity = currentItems.reduce((acc, item) => acc + (item.deliveringQuantity || 0), 0)
-                                form.setValue('totalDeliveringQuantity', totalDeliveringQuantity, { shouldValidate: true, shouldDirty: true })
+                                form.setValue('totalDeliveringQuantity', totalDeliveringQuantity, {
+                                  shouldValidate: true,
+                                  shouldDirty: true,
+                                })
                               }}
                               disabled={isLoading || !editMode}
                             />
