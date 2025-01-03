@@ -13,7 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Trash2Icon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FieldErrors, useFieldArray, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
@@ -48,6 +48,19 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
     queryFn: () => listDeliveryOrderItemsForDeliveryOrderId(deliveryChallan.deliveryOrderId),
     initialData: [],
   })
+
+  useEffect(() => {
+    const initialTotalDeliveringQuantity = form.getValues('deliveryChallanItems').reduce((acc, item) => acc + (item?.deliveringQuantity || 0), 0) || 0
+    form.setValue('totalDeliveringQuantity', initialTotalDeliveringQuantity, { shouldValidate: true, shouldDirty: true })
+
+    const subscription = form.watch((value, { name }) => {
+      if (name?.startsWith('deliveryChallanItems')) {
+        const totalDeliveringQuantity = value.deliveryChallanItems?.reduce((acc, item) => acc + (item?.deliveringQuantity || 0), 0) || 0
+        form.setValue('totalDeliveringQuantity', totalDeliveringQuantity, { shouldValidate: true, shouldDirty: true })
+      }
+    })
+    return () => subscription.unsubscribe()
+  }, [form])
 
   const deliveryChallanMutation = useMutation({
     mutationFn: async (data: TDeliveryChallan) => {
@@ -151,7 +164,7 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
               <FormItem>
                 <FormLabel>Delivery Order ID</FormLabel>
                 <FormControl>
-                  <Input {...field} value={field.value ?? ''} disabled={true} />
+                  <Input {...field} value={field.value ?? ''} disabled={true} className="bg-gray-100" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -185,21 +198,7 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
               <FormItem>
                 <FormLabel>Party Name</FormLabel>
                 <FormControl>
-                  <Input {...field} value={field.value ?? ''} disabled={true} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="totalDeliveringQuantity"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Total Delivering Quantity</FormLabel>
-                <FormControl>
-                  <Input {...field} value={field.value ?? ''} disabled={true} />
+                  <Input {...field} value={field.value ?? ''} disabled={true} className="bg-gray-100" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -212,7 +211,7 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
           <p className="font-semibold text-sm text-muted-foreground">Delivery Challan Items</p>
           <Dialog open={isSelectDeliveryOrderItemOpen} onOpenChange={setIsSelectDeliveryOrderItemOpen}>
             <DialogTrigger asChild>
-              <Button type="button" size={'sm'} variant={'outline'} onClick={() => setIsSelectDeliveryOrderItemOpen(true)}>
+              <Button type="button" size={'sm'} variant={'outline'} onClick={() => setIsSelectDeliveryOrderItemOpen(true)} disabled={isLoading || !editMode}>
                 Add Item
               </Button>
             </DialogTrigger>
@@ -302,7 +301,8 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
                   <TableCell>{item.locationName}</TableCell>
                   <TableCell>{item.materialName}</TableCell>
                   <TableCell>
-                    {item.quantity} | {item.deliveredQuantity} | {item.inProgressQuantity}
+                    {form.getValues('deliveryChallanItems')[index].quantity} | {form.getValues('deliveryChallanItems')[index].deliveredQuantity} |{' '}
+                    {form.getValues('deliveryChallanItems')[index].inProgressQuantity}
                   </TableCell>
                   <TableCell>{item.rate}</TableCell>
                   <TableCell>{item.dueDate ? new Date(item.dueDate).toLocaleDateString('en-GB') : '-'}</TableCell>
@@ -317,9 +317,14 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
                               {...field}
                               type="number"
                               onChange={(e) => {
-                                const value = parseFloat(e.target.value)
+                                const value = parseFloat(e.target.value) || 0
                                 field.onChange(value)
+                                const currentItems = form.getValues('deliveryChallanItems')
+                                currentItems[index].deliveringQuantity = value
+                                const totalDeliveringQuantity = currentItems.reduce((acc, item) => acc + (item.deliveringQuantity || 0), 0)
+                                form.setValue('totalDeliveringQuantity', totalDeliveringQuantity, { shouldValidate: true, shouldDirty: true })
                               }}
+                              disabled={isLoading || !editMode}
                             />
                           </FormControl>
                           <FormMessage />
@@ -328,17 +333,22 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
                     />
                   </TableCell>
                   <TableCell>
-                    <Button type="button" size={'icon'} variant={'ghost'} onClick={() => removeItemByIndex(index)}>
+                    <Button type="button" size={'icon'} variant={'ghost'} onClick={() => removeItemByIndex(index)} disabled={isLoading || !editMode}>
                       <Trash2Icon className="w-4 h-4 text-red-500" />
                     </Button>
                   </TableCell>
                 </TableRow>
               )
             })}
+
+            <TableRow>
+              <TableCell colSpan={8} className="text-right font-semibold px-4 py-2">
+                Total Delivering Quantity
+              </TableCell>
+              <TableCell className="px-4 py-2">{form.getValues('totalDeliveringQuantity')}</TableCell>
+            </TableRow>
           </TableBody>
         </Table>
-
-        <Separator className="my-4" />
       </form>
     </Form>
   )
