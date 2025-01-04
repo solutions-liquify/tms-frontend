@@ -271,7 +271,7 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
                         <PencilIcon className="w-4 h-4 text-blue-500 cursor-pointer" />
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="overflow-y-auto w-full h-[80vh]">
+                    <DialogContent className="overflow-y-auto w-full max-h-[80vh]">
                       <DialogHeader className="px-4">
                         <DialogTitle>Edit Delivery Order Item</DialogTitle>
                       </DialogHeader>

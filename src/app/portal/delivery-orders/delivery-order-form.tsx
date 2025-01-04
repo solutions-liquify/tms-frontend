@@ -93,6 +93,7 @@ export default function DeliveryOrderForm({ enableEdit, deliveryOrder }: Deliver
       try {
         await queryClient.invalidateQueries({ queryKey: ['deliveryOrders'] })
         form.reset(response)
+        router.back()
         setEditMode(false)
         toast.success('Delivery Order saved successfully')
       } catch (error) {

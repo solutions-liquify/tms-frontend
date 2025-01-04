@@ -229,7 +229,7 @@ export default function DeliveryOrderPage({ params }: IDeliveryOrderPageProps) {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {deliveryChallansQuery.data?.map((challan, index) => (
-                  <tr key={challan.id} className="hover:bg-gray-100 cursor-pointer">
+                  <tr key={challan.id} className="hover:bg-gray-100 cursor-pointer" onClick={() => router.push(`/portal/delivery-challans/${challan.id}`)}>
                     <td className="px-3 py-2 text-sm whitespace-nowrap">{index + 1}</td>
                     <td className="px-3 py-2 text-sm whitespace-nowrap">{challan.id}</td>
                     <td className="px-3 py-2 text-sm whitespace-nowrap">
