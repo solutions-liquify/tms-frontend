@@ -60,11 +60,8 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
         const totalQuantity = value.deliveryOrderSections?.[index]?.deliveryOrderItems?.reduce((acc, item) => acc + (item?.quantity || 0), 0) || 0
         const totalDeliveredQuantity =
           value.deliveryOrderSections?.[index]?.deliveryOrderItems?.reduce((acc, item) => acc + (item?.deliveredQuantity || 0), 0) || 0
-        const totalInProgressQuantity =
-          value.deliveryOrderSections?.[index]?.deliveryOrderItems?.reduce((acc, item) => acc + (item?.inProgressQuantity || 0), 0) || 0
         form.setValue(`deliveryOrderSections.${index}.totalQuantity`, totalQuantity)
         form.setValue(`deliveryOrderSections.${index}.totalDeliveredQuantity`, totalDeliveredQuantity)
-        form.setValue(`deliveryOrderSections.${index}.totalInProgressQuantity`, totalInProgressQuantity)
       }
     })
     return () => subscription.unsubscribe()
@@ -150,8 +147,6 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
                     quantity: 0,
                     rate: 0,
                     deliveredQuantity: 0,
-                    status: 'pending',
-                    inProgressQuantity: 0,
                     district: form.getValues(`deliveryOrderSections.${index}.district`),
                   })
                 }}
@@ -243,8 +238,7 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
                 {materialsQuery.data?.find((material) => material.id === item.materialId)?.name || item.materialId}
               </td>
               <td className="whitespace-nowrap px-2 py-1 text-gray-900 ">
-                {item.quantity} | <span className="text-green-500">{item.deliveredQuantity}</span> |{' '}
-                <span className="text-amber-500">{item.inProgressQuantity}</span>
+                {item.quantity} | <span className="text-green-500">{item.deliveredQuantity}</span>
               </td>
               <td className="whitespace-nowrap px-2 py-1 text-gray-900">{item.rate}</td>
               <td className="whitespace-nowrap px-2 py-1 text-gray-900">{item.dueDate ? new Date(item.dueDate * 1000).toLocaleDateString('en-GB') : ''}</td>
@@ -319,8 +313,7 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
             </td>
             <td className="whitespace-nowrap px-2 py-2 font-semibold text-gray-900">
               {form.getValues(`deliveryOrderSections.${index}.totalQuantity`)} |{' '}
-              <span className="text-green-500">{form.getValues(`deliveryOrderSections.${index}.totalDeliveredQuantity`)}</span> |{' '}
-              <span className="text-amber-500">{form.getValues(`deliveryOrderSections.${index}.totalInProgressQuantity`)}</span>
+              <span className="text-green-500">{form.getValues(`deliveryOrderSections.${index}.totalDeliveredQuantity`)}</span>
             </td>
             <td className="whitespace-nowrap px-2 py-2 font-semibold text-gray-900"></td>
             <td className="whitespace-nowrap px-2 py-2 font-semibold text-gray-900"></td>

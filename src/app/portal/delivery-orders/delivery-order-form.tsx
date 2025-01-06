@@ -35,7 +35,6 @@ export default function DeliveryOrderForm({ enableEdit, deliveryOrder }: Deliver
     defaultValues: deliveryOrder ?? {
       deliveryOrderSections: [],
       grandTotalQuantity: 0,
-      grandTotalInProgressQuantity: 0,
       grandTotalDeliveredQuantity: 0,
       status: 'pending',
     },
@@ -50,8 +49,6 @@ export default function DeliveryOrderForm({ enableEdit, deliveryOrder }: Deliver
     appendSection({
       totalQuantity: 0,
       totalDeliveredQuantity: 0,
-      totalInProgressQuantity: 0,
-      status: 'pending',
       deliveryOrderItems: [],
     })
   }
@@ -62,7 +59,7 @@ export default function DeliveryOrderForm({ enableEdit, deliveryOrder }: Deliver
 
   const partiesQuery = useQuery<TParty[]>({
     queryKey: ['parties'],
-    queryFn: () => listParties({ getAll: true, statuses: ['active'] }),
+    queryFn: () => listParties({ getAll: true }),
     initialData: [],
   })
 
@@ -204,7 +201,7 @@ export default function DeliveryOrderForm({ enableEdit, deliveryOrder }: Deliver
                     <SelectContent>
                       {partiesQuery.data?.map((party) => (
                         <SelectItem key={party.id} value={party.id ?? ''}>
-                          {party.name}
+                          <span className={party.status === 'inactive' ? 'line-through text-red-500' : ''}>{party.name}</span>
                         </SelectItem>
                       ))}
                     </SelectContent>

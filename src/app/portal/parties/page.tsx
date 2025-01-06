@@ -66,17 +66,19 @@ export default function Parties() {
               <TableHead>Name</TableHead>
               <TableHead>POC</TableHead>
               <TableHead>Contact Number</TableHead>
-              <TableHead>Status</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {partiesQuery.data?.map((party, index) => (
-              <TableRow key={party.id} onClick={() => router.push(`/portal/parties/${party.id}`)} className="cursor-pointer">
+              <TableRow
+                key={party.id}
+                onClick={() => router.push(`/portal/parties/${party.id}`)}
+                className={`cursor-pointer ${party.status === 'inactive' ? 'line-through text-red-500' : ''}`}
+              >
                 <TableCell>{index + 1 + (page - 1) * size}</TableCell>
                 <TableCell>{party.name}</TableCell>
                 <TableCell>{party.pointOfContact || '-'}</TableCell>
                 <TableCell>{party.contactNumber || '-'}</TableCell>
-                <TableCell className="capitalize">{party.status}</TableCell>
               </TableRow>
             ))}
           </TableBody>

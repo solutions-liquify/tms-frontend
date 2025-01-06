@@ -32,7 +32,6 @@ export const DeliveryOrderItem = ({ index, itemIndex, form, district }: Delivery
         talukas: form.getValues(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.taluka`)
           ? [form.getValues(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.taluka`) as string]
           : [],
-        statuses: ['active'],
         getAll: true,
       }),
     initialData: [],
@@ -85,7 +84,7 @@ export const DeliveryOrderItem = ({ index, itemIndex, form, district }: Delivery
                 <SelectContent>
                   {locationsQuery.data?.map((location) => (
                     <SelectItem key={location.id} value={location.id ?? ''}>
-                      {location.name}
+                      <span className={location.status === 'inactive' ? 'line-through text-red-500' : ''}>{location.name}</span>
                     </SelectItem>
                   ))}
                 </SelectContent>

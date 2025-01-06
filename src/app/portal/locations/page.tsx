@@ -100,9 +100,9 @@ export default function Locations() {
               <TableRow
                 key={location.id}
                 onClick={() => router.push(`/portal/locations/${location.id}`)}
-                className={`cursor-pointer ${location.status === 'inactive' ? 'line-through' : ''}`}
+                className={`cursor-pointer ${location.status === 'inactive' ? 'line-through text-red-500' : ''}`}
               >
-                <TableCell>{index + 1}</TableCell>
+                <TableCell>{index + 1 + (page - 1) * size}</TableCell>
                 <TableCell>{location.name}</TableCell>
                 <TableCell>{location.contactNumber}</TableCell>
                 <TableCell>{location.district}</TableCell>
