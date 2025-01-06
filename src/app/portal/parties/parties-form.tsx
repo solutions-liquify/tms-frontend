@@ -209,7 +209,7 @@ export default function PartyForm({ enableEdit, party }: PartyFormProps) {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input {...field} value={field.value ?? ''} disabled={isLoading || !editMode} />
+                    <Input {...field} value={field.value ?? ''} disabled={isLoading || !editMode || party?.status === 'inactive'} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -222,7 +222,7 @@ export default function PartyForm({ enableEdit, party }: PartyFormProps) {
                 <FormItem>
                   <FormLabel>Point of Contact</FormLabel>
                   <FormControl>
-                    <Input {...field} value={field.value ?? ''} disabled={isLoading || !editMode} />
+                    <Input {...field} value={field.value ?? ''} disabled={isLoading || !editMode || party?.status === 'inactive'} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -235,7 +235,7 @@ export default function PartyForm({ enableEdit, party }: PartyFormProps) {
                 <FormItem>
                   <FormLabel>Contact Number</FormLabel>
                   <FormControl>
-                    <Input {...field} value={field.value ?? ''} disabled={isLoading || !editMode} />
+                    <Input {...field} value={field.value ?? ''} disabled={isLoading || !editMode || party?.status === 'inactive'} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -248,7 +248,7 @@ export default function PartyForm({ enableEdit, party }: PartyFormProps) {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input {...field} value={field.value ?? ''} disabled={isLoading || !editMode} />
+                    <Input {...field} value={field.value ?? ''} disabled={isLoading || !editMode || party?.status === 'inactive'} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -261,7 +261,7 @@ export default function PartyForm({ enableEdit, party }: PartyFormProps) {
                 <FormItem>
                   <FormLabel>Address Line 1</FormLabel>
                   <FormControl>
-                    <Input {...field} value={field.value ?? ''} disabled={isLoading || !editMode} />
+                    <Input {...field} value={field.value ?? ''} disabled={isLoading || !editMode || party?.status === 'inactive'} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -274,7 +274,7 @@ export default function PartyForm({ enableEdit, party }: PartyFormProps) {
                 <FormItem>
                   <FormLabel>Address Line 2</FormLabel>
                   <FormControl>
-                    <Input {...field} value={field.value ?? ''} disabled={isLoading || !editMode} />
+                    <Input {...field} value={field.value ?? ''} disabled={isLoading || !editMode || party?.status === 'inactive'} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -287,7 +287,12 @@ export default function PartyForm({ enableEdit, party }: PartyFormProps) {
                 <FormItem>
                   <FormLabel>State</FormLabel>
                   <FormControl>
-                    <Select {...field} disabled={isLoading || !editMode} onValueChange={field.onChange} value={field.value ?? ''}>
+                    <Select
+                      {...field}
+                      disabled={isLoading || !editMode || party?.status === 'inactive'}
+                      onValueChange={field.onChange}
+                      value={field.value ?? ''}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select a state" />
                       </SelectTrigger>
@@ -311,7 +316,12 @@ export default function PartyForm({ enableEdit, party }: PartyFormProps) {
                 <FormItem>
                   <FormLabel>District</FormLabel>
                   <FormControl>
-                    <Select {...field} disabled={isLoading || !editMode} onValueChange={field.onChange} value={field.value ?? ''}>
+                    <Select
+                      {...field}
+                      disabled={isLoading || !editMode || party?.status === 'inactive'}
+                      onValueChange={field.onChange}
+                      value={field.value ?? ''}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select a district" />
                       </SelectTrigger>
@@ -335,7 +345,12 @@ export default function PartyForm({ enableEdit, party }: PartyFormProps) {
                 <FormItem>
                   <FormLabel>Taluka</FormLabel>
                   <FormControl>
-                    <Select {...field} disabled={isLoading || !editMode} onValueChange={field.onChange} value={field.value ?? ''}>
+                    <Select
+                      {...field}
+                      disabled={isLoading || !editMode || party?.status === 'inactive'}
+                      onValueChange={field.onChange}
+                      value={field.value ?? ''}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select a taluka" />
                       </SelectTrigger>
@@ -359,7 +374,12 @@ export default function PartyForm({ enableEdit, party }: PartyFormProps) {
                 <FormItem>
                   <FormLabel>City</FormLabel>
                   <FormControl>
-                    <Select {...field} disabled={isLoading || !editMode} onValueChange={field.onChange} value={field.value ?? ''}>
+                    <Select
+                      {...field}
+                      disabled={isLoading || !editMode || party?.status === 'inactive'}
+                      onValueChange={field.onChange}
+                      value={field.value ?? ''}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select a city" />
                       </SelectTrigger>
@@ -383,7 +403,7 @@ export default function PartyForm({ enableEdit, party }: PartyFormProps) {
                 <FormItem>
                   <FormLabel>Pin Code</FormLabel>
                   <FormControl>
-                    <Input {...field} value={field.value ?? ''} disabled={isLoading || !editMode} />
+                    <Input {...field} value={field.value ?? ''} disabled={isLoading || !editMode || party?.status === 'inactive'} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

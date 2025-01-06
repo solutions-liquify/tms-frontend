@@ -129,7 +129,7 @@ export default function EmployeeForm({ enableEdit, employee }: EmployeeFormProps
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input {...field} value={field.value ?? ''} disabled={isLoading || !editMode} />
+                    <Input {...field} value={field.value ?? ''} disabled={isLoading || !editMode || employee?.status === 'inactive'} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -142,7 +142,7 @@ export default function EmployeeForm({ enableEdit, employee }: EmployeeFormProps
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input {...field} value={field.value ?? ''} disabled={isLoading || !editMode} />
+                    <Input {...field} value={field.value ?? ''} disabled={isLoading || !editMode || employee?.status === 'inactive'} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -155,7 +155,7 @@ export default function EmployeeForm({ enableEdit, employee }: EmployeeFormProps
                 <FormItem>
                   <FormLabel>Contact Number</FormLabel>
                   <FormControl>
-                    <Input {...field} value={field.value ?? ''} disabled={isLoading || !editMode} />
+                    <Input {...field} value={field.value ?? ''} disabled={isLoading || !editMode || employee?.status === 'inactive'} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -168,7 +168,12 @@ export default function EmployeeForm({ enableEdit, employee }: EmployeeFormProps
                 <FormItem>
                   <FormLabel>Role</FormLabel>
                   <FormControl>
-                    <Select {...field} value={field.value ?? ''} disabled={isLoading || !editMode} onValueChange={field.onChange}>
+                    <Select
+                      {...field}
+                      value={field.value ?? ''}
+                      disabled={isLoading || !editMode || employee?.status === 'inactive'}
+                      onValueChange={field.onChange}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select a role" />
                       </SelectTrigger>
