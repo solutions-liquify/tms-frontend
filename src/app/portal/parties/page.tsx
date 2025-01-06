@@ -71,7 +71,7 @@ export default function Parties() {
           <TableBody>
             {partiesQuery.data?.map((party, index) => (
               <TableRow key={party.id} onClick={() => router.push(`/portal/parties/${party.id}`)} className="cursor-pointer">
-                <TableCell>{index + 1}</TableCell>
+                <TableCell>{index + 1 + (page - 1) * size}</TableCell>
                 <TableCell>{party.name}</TableCell>
                 <TableCell>{party.pointOfContact || '-'}</TableCell>
                 <TableCell>{party.contactNumber || '-'}</TableCell>

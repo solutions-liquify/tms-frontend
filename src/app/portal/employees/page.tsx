@@ -15,7 +15,7 @@ export default function Employees() {
   const router = useRouter()
   const [search, setSearch] = useState<string>('')
   const [selectedRoles, setSelectedRoles] = useState<string[]>([])
-  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([])
+  const [selectedStatuses, setSelectedStatuses] = useState<string[]>(['active'])
   const [page, setPage] = useState(1)
   const [size, setSize] = useState(10)
 
