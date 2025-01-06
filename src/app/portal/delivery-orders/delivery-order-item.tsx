@@ -27,7 +27,14 @@ export const DeliveryOrderItem = ({ index, itemIndex, form, district }: Delivery
   const locationsQuery = useQuery<TLocation[]>({
     queryKey: ['locations', district, form.getValues(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.taluka`)],
     queryFn: () =>
-      listLocations({ district: district, taluka: form.getValues(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.taluka`) || null }),
+      listLocations({
+        districts: district ? [district] : [],
+        talukas: form.getValues(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.taluka`)
+          ? [form.getValues(`deliveryOrderSections.${index}.deliveryOrderItems.${itemIndex}.taluka`) as string]
+          : [],
+        statuses: ['active'],
+        getAll: true,
+      }),
     initialData: [],
   })
 

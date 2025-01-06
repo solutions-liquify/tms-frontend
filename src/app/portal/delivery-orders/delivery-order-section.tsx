@@ -45,7 +45,7 @@ export default function DeliveryOrderSection({ index, removeSection, isLoading, 
 
   const locationsQuery = useQuery<TLocation[]>({
     queryKey: ['locations'],
-    queryFn: () => listLocations({}),
+    queryFn: () => listLocations({ getAll: true }),
     initialData: [],
   })
 

@@ -97,7 +97,11 @@ export default function Locations() {
           </TableHeader>
           <TableBody>
             {locationsQuery.data?.map((location, index) => (
-              <TableRow key={location.id} onClick={() => router.push(`/portal/locations/${location.id}`)} className="cursor-pointer">
+              <TableRow
+                key={location.id}
+                onClick={() => router.push(`/portal/locations/${location.id}`)}
+                className={`cursor-pointer ${location.status === 'inactive' ? 'line-through' : ''}`}
+              >
                 <TableCell>{index + 1}</TableCell>
                 <TableCell>{location.name}</TableCell>
                 <TableCell>{location.contactNumber}</TableCell>

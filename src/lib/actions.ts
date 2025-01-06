@@ -52,6 +52,26 @@ export const getLocation = async (id: string) => {
   return response.data
 }
 
+export const deactivateLocation = async (id: string) => {
+  const accessToken = await authService.getAccessToken()
+  const response = await axios.get(`${getBackendUrl()}/api/v1/locations/deactivate/${id}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
+  return response.data
+}
+
+export const activateLocation = async (id: string) => {
+  const accessToken = await authService.getAccessToken()
+  const response = await axios.get(`${getBackendUrl()}/api/v1/locations/activate/${id}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
+  return response.data
+}
+
 // Party API
 
 export const createParty = async (data: TParty) => {

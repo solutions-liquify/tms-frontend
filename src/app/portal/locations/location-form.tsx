@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { toast } from 'sonner'
-import { createLocation, listCities, listDistricts, listStates, listTalukas, updateLocation } from '@/lib/actions'
+import { activateLocation, createLocation, deactivateLocation, listCities, listDistricts, listStates, listTalukas, updateLocation } from '@/lib/actions'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
@@ -82,6 +82,54 @@ export default function LocationForm({ enableEdit, location }: LocationFormProps
       try {
         await queryClient.invalidateQueries({ queryKey: ['locations'] })
         toast.success('Location saved successfully')
+        router.back()
+      } catch (error) {
+        console.log(error)
+        toast.error('Error invalidating cache.')
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    onError: (error) => {
+      setIsLoading(false)
+      console.log(error)
+      toast.error('An error occurred. Please try again later.')
+    },
+  })
+
+  const deactivateMutation = useMutation({
+    mutationFn: async (id: string) => {
+      setIsLoading(true)
+      await deactivateLocation(id)
+    },
+    onSuccess: async () => {
+      try {
+        await queryClient.invalidateQueries({ queryKey: ['locations'] })
+        toast.success('Location deactivated successfully')
+        router.back()
+      } catch (error) {
+        console.log(error)
+        toast.error('Error invalidating cache.')
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    onError: (error) => {
+      setIsLoading(false)
+      console.log(error)
+      toast.error('An error occurred. Please try again later.')
+    },
+  })
+
+  const activateMutation = useMutation({
+    mutationFn: async (id: string) => {
+      setIsLoading(true)
+      await activateLocation(id)
+    },
+    onSuccess: async () => {
+      try {
+        await queryClient.invalidateQueries({ queryKey: ['locations'] })
+        toast.success('Location activated successfully')
         router.back()
       } catch (error) {
         console.log(error)
@@ -348,6 +396,22 @@ export default function LocationForm({ enableEdit, location }: LocationFormProps
               )}
             />
           </div>
+
+          <div className="my-4" />
+
+          {editMode && location && location?.id && location?.status === 'active' && (
+            <Button variant="destructive" disabled={isLoading} onClick={() => deactivateMutation.mutateAsync(location?.id ?? '')}>
+              Delete Location
+            </Button>
+          )}
+
+          {location && location?.status === 'inactive' && <p className="text-muted-foreground text-red-500 my-4 text-sm">This location is deactivated.</p>}
+
+          {editMode && location && location?.id && location?.status === 'inactive' && (
+            <Button disabled={isLoading} onClick={() => activateMutation.mutateAsync(location?.id ?? '')}>
+              Activate Location
+            </Button>
+          )}
         </form>
       </Form>
     </div>

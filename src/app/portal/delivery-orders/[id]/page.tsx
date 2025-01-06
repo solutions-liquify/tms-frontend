@@ -60,7 +60,7 @@ export default function DeliveryOrderPage({ params }: IDeliveryOrderPageProps) {
 
   const locationsQuery = useQuery<TLocation[]>({
     queryKey: ['locations'],
-    queryFn: () => listLocations({}),
+    queryFn: () => listLocations({ getAll: true }),
     initialData: [],
   })
 
