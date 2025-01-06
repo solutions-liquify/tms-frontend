@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react'
 import { login } from '@/lib/actions'
 import { authService } from '@/lib/auth'
 import { Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 
 export default function LoginForm() {
   const router = useRouter()
@@ -40,6 +41,7 @@ export default function LoginForm() {
       router.push('/portal/dashboard')
     } catch (error) {
       console.log(error)
+      toast.error('An error occurred while logging in. Please try again later.')
     } finally {
       setIsLoading(false)
     }

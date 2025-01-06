@@ -118,7 +118,6 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
         materialName: item.materialName,
         quantity: item.quantity,
         deliveredQuantity: item.deliveredQuantity,
-        inProgressQuantity: item.inProgressQuantity,
         rate: item.rate ?? 0.0,
         dueDate: item.dueDate,
         deliveringQuantity: 0.0,
@@ -243,7 +242,7 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {deliveryOrderItemsQuery.data?.map((item: TDeliverOrderItemMetadata, index: number) => {
+                    {deliveryOrderItemsQuery.data?.map((item: TDeliverOrderItemMetadata) => {
                       return (
                         <TableRow
                           key={item.id}
@@ -262,7 +261,7 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
                           <TableCell>{item.locationName}</TableCell>
                           <TableCell>{item.materialName}</TableCell>
                           <TableCell>
-                            {item.quantity} | {item.deliveredQuantity} | {item.inProgressQuantity}
+                            {item.quantity} | {item.deliveredQuantity}
                           </TableCell>
                           <TableCell>{item.rate}</TableCell>
                           <TableCell>{item.dueDate ? new Date(item.dueDate).toLocaleDateString('en-GB') : '-'}</TableCell>
@@ -325,9 +324,7 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
                           </Tooltip>
                         </TooltipProvider>
                       ) : (
-                        <span>
-                          {item.deliveredQuantity} | {item.inProgressQuantity}
-                        </span>
+                        <span>{item.deliveredQuantity}</span>
                       )}
                     </div>
                   </TableCell>

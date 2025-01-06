@@ -10,7 +10,6 @@ export const DeliveryChallanItemSchema = z.object({
   materialName: z.string().optional().nullable(),
   quantity: z.number().default(0.0),
   deliveredQuantity: z.number().default(0.0),
-  inProgressQuantity: z.number(),
   rate: z.number().default(0.0),
   dueDate: z.number().optional().nullable(),
   deliveringQuantity: z.number(),

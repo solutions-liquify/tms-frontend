@@ -1,14 +1,13 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useQuery } from '@tanstack/react-query'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { listEmployees } from '@/lib/actions'
 import { TEmployee } from '@/schemas/employee-schema'
+import { useQuery } from '@tanstack/react-query'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { Separator } from '@/components/ui/separator'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
 export default function Employees() {
   const router = useRouter()
@@ -49,6 +48,7 @@ export default function Employees() {
             <TableHead>Email</TableHead>
             <TableHead>Contact Number</TableHead>
             <TableHead>Roles</TableHead>
+            <TableHead>Status</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -59,6 +59,7 @@ export default function Employees() {
               <TableCell>{employee.email}</TableCell>
               <TableCell>{employee.contactNumber}</TableCell>
               <TableCell className="capitalize">{employee.role?.toLowerCase()}</TableCell>
+              <TableCell className="capitalize">{employee.status.toLowerCase()}</TableCell>
             </TableRow>
           ))}
         </TableBody>

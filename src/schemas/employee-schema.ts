@@ -11,6 +11,7 @@ export const EmployeeSchema = z.object({
     .nullable(),
   role: z.string().optional().nullable(),
   createdAt: z.number().optional().nullable(),
+  status: z.string(),
 })
 
 export type TEmployee = z.infer<typeof EmployeeSchema>

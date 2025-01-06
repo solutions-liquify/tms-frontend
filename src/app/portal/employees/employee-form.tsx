@@ -3,8 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Separator } from '@/components/ui/separator'
-import { createEmployee, updateEmployee } from '@/lib/actions'
+import { createEmployee, deactivateEmployee, updateEmployee } from '@/lib/actions'
 import { EmployeeSchema, TEmployee } from '@/schemas/employee-schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -15,6 +14,7 @@ import { toast } from 'sonner'
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { listRoles } from '@/lib/utils'
+import { Dialog, DialogFooter, DialogHeader, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 interface EmployeeFormProps {
   employee?: TEmployee
   enableEdit: boolean
@@ -25,10 +25,11 @@ export default function EmployeeForm({ enableEdit, employee }: EmployeeFormProps
   const queryClient = useQueryClient()
   const [isLoading, setIsLoading] = useState(false)
   const [editMode, setEditMode] = useState(enableEdit)
+  const [open, setOpen] = useState(false)
 
   const form = useForm<TEmployee>({
     resolver: zodResolver(EmployeeSchema),
-    defaultValues: employee ?? {},
+    defaultValues: employee ?? { status: 'active' },
   })
 
   const mutation = useMutation({
@@ -47,6 +48,30 @@ export default function EmployeeForm({ enableEdit, employee }: EmployeeFormProps
       try {
         await queryClient.invalidateQueries({ queryKey: ['employees'] })
         toast.success('Employee saved successfully')
+        router.back()
+      } catch (error) {
+        console.log(error)
+        toast.error('Error invalidating cache.')
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    onError: (error) => {
+      setIsLoading(false)
+      console.log(error)
+      toast.error('An error occurred. Please try again later.')
+    },
+  })
+
+  const deactivateMutation = useMutation({
+    mutationFn: async (id: string) => {
+      setIsLoading(true)
+      await deactivateEmployee(id)
+    },
+    onSuccess: async () => {
+      try {
+        await queryClient.invalidateQueries({ queryKey: ['employees'] })
+        toast.success('Employee deactivated successfully')
         router.back()
       } catch (error) {
         console.log(error)
@@ -88,7 +113,7 @@ export default function EmployeeForm({ enableEdit, employee }: EmployeeFormProps
             )}
 
             {!editMode && (
-              <Button type="button" disabled={isLoading} size="sm" onClick={() => setEditMode(true)}>
+              <Button type="button" disabled={isLoading || employee?.status === 'inactive'} size="sm" onClick={() => setEditMode(true)}>
                 Edit
               </Button>
             )}
@@ -161,6 +186,40 @@ export default function EmployeeForm({ enableEdit, employee }: EmployeeFormProps
               )}
             />
           </div>
+
+          <div className="my-4" />
+
+          {editMode && employee && employee?.id && employee?.status === 'active' && (
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild>
+                <Button variant="destructive" disabled={isLoading}>
+                  Deactivate
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Deactivate Employee</DialogTitle>
+                  <DialogDescription>Are you sure you want to deactivate this employee? This action cannot be undone.</DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={async () => {
+                      await deactivateMutation.mutateAsync(employee?.id ?? '')
+                      setOpen(false)
+                    }}
+                  >
+                    {isLoading ? 'Deactivating...' : 'Deactivate'}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
+
+          {employee && employee?.status === 'inactive' && <p className="text-muted-foreground text-red-500 my-4 text-sm">This employee is deactivated.</p>}
         </form>
       </Form>
     </div>

@@ -220,6 +220,16 @@ export const getEmployee = async (id: string) => {
   return response.data
 }
 
+export const deactivateEmployee = async (id: string) => {
+  const accessToken = await authService.getAccessToken()
+  const response = await axios.get(`${getBackendUrl()}/api/v1/employees/deactivate/${id}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
+  return response.data
+}
+
 // Auth API
 export const login = async (data: TLogin) => {
   const response = await axios.post(`${getBackendUrl()}/api/v1/auth/login`, data)

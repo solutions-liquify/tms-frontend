@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation'
 import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/utils'
 
 interface IDeliveryOrderPageProps {
   params: Promise<{
@@ -29,6 +30,26 @@ export default function DeliveryOrderPage({ params }: IDeliveryOrderPageProps) {
     initialData: undefined,
     enabled: !!unwrappedParams.id,
   })
+
+  const materialQuantities = React.useMemo(() => {
+    const materialMap: Record<string, { quantity: number; deliveredQuantity: number }> = {}
+
+    if (deliveryOrderQuery.data?.deliveryOrderSections) {
+      deliveryOrderQuery.data.deliveryOrderSections.forEach((section) => {
+        section.deliveryOrderItems?.forEach((item) => {
+          const materialId = item.materialId ?? 'unknown'
+          if (!materialMap[materialId]) {
+            materialMap[materialId] = { quantity: 0, deliveredQuantity: 0 }
+          }
+          materialMap[materialId].quantity += item.quantity
+          materialMap[materialId].deliveredQuantity += item.deliveredQuantity
+        })
+      })
+    }
+    console.log(materialMap)
+
+    return materialMap
+  }, [deliveryOrderQuery.data])
 
   const partyQuery = useQuery<TParty>({
     queryKey: ['party', deliveryOrderQuery.data?.partyId],
@@ -69,11 +90,11 @@ export default function DeliveryOrderPage({ params }: IDeliveryOrderPageProps) {
   const renderStatusBadge = (status: string) => {
     let badgeColor = 'bg-gray-100 text-gray-800' // Default gray for unknown status
     if (status === 'delivered') {
-      badgeColor = 'bg-green-100 text-green-800'
-    } else if (status === 'in-progress') {
-      badgeColor = 'bg-amber-100 text-amber-800'
+      badgeColor = 'bg-green-100 text-green-800 hover:bg-green-200'
+    } else if (status === 'pending') {
+      badgeColor = 'bg-amber-100 text-amber-800 hover:bg-amber-200'
     }
-    return <Badge className={badgeColor}>{status}</Badge>
+    return <Badge className={cn(badgeColor, 'cursor-pointer capitalize')}>{status}</Badge>
   }
 
   return (
@@ -88,13 +109,17 @@ export default function DeliveryOrderPage({ params }: IDeliveryOrderPageProps) {
       {/* Contract Information Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg font-semibold">Contract Information</CardTitle>
+          <CardTitle className="text-lg font-semibold">Summary </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid sm:grid-cols-3 grid-cols-1 gap-6">
             <div className="space-y-3">
               <div className="flex space-x-2">
-                <p className="text-sm font-medium text-gray-600">Contract Number:</p>
+                <p className="text-sm font-medium text-gray-600">DO Number:</p>
+                <p className="text-sm">{deliveryOrderQuery.data?.id?.slice(0, 4)}...</p>
+              </div>
+              <div className="flex space-x-2">
+                <p className="text-sm font-medium text-gray-600">Client Contract Number:</p>
                 <p className="text-sm">{deliveryOrderQuery.data?.contractId}</p>
               </div>
               <div className="flex space-x-2">
@@ -112,31 +137,27 @@ export default function DeliveryOrderPage({ params }: IDeliveryOrderPageProps) {
             <div className="space-y-3">
               <div className="flex space-x-2">
                 <p className="text-sm font-medium text-gray-600">Total Quantity:</p>
-                <p className="text-sm font-semibold">{deliveryOrderQuery.data?.grandTotalQuantity}</p>
+                <p className="text-sm font-semibold">
+                  {deliveryOrderQuery.data?.grandTotalQuantity} | <span className="text-green-500">{deliveryOrderQuery.data?.grandTotalDeliveredQuantity}</span>
+                </p>
               </div>
-              <div className="flex space-x-2">
-                <p className="text-sm font-medium text-gray-600">Total Delivered Quantity:</p>
-                <p className="text-sm font-semibold text-amber-500">{deliveryOrderQuery.data?.grandTotalDeliveredQuantity}</p>
-              </div>
-              <div className="flex space-x-2">
-                <p className="text-sm font-medium text-gray-600">Total In Progress Quantity:</p>
-                <p className="text-sm font-semibold text-green-500">{deliveryOrderQuery.data?.grandTotalInProgressQuantity}</p>
-              </div>
-            </div>
 
-            <div className="space-y-3">
               <div className="flex space-x-2">
                 <p className="text-sm font-medium text-gray-600">Total DCs:</p>
                 <p className="text-sm font-semibold">{deliveryChallansQuery.data?.length}</p>
               </div>
-              <div className="flex space-x-2">
-                <p className="text-sm font-medium text-gray-600">DCs Delivered:</p>
-                <p className="text-sm font-semibold text-amber-500">{deliveryChallansQuery.data?.filter((dc) => dc.status === 'delivered').length}</p>
-              </div>
-              <div className="flex space-x-2">
-                <p className="text-sm font-medium text-gray-600">DCs In-Progress:</p>
-                <p className="text-sm font-semibold text-green-500">{deliveryChallansQuery.data?.filter((dc) => dc.status === 'in-progress').length}</p>
-              </div>
+            </div>
+
+            <div className="space-y-3">
+              {materialQuantities &&
+                Object.entries(materialQuantities).map(([key, { quantity, deliveredQuantity }]) => (
+                  <div key={key} className="flex space-x-2">
+                    <p className="text-sm font-medium text-gray-600">{materialsQuery.data?.find((material) => material.id === key)?.name}:</p>
+                    <p className="text-sm font-semibold">
+                      {quantity} | <span className="text-green-500">{deliveredQuantity}</span>
+                    </p>
+                  </div>
+                ))}
             </div>
           </div>
         </CardContent>
@@ -180,14 +201,15 @@ export default function DeliveryOrderPage({ params }: IDeliveryOrderPageProps) {
                           {materialsQuery.data?.find((material) => material.id === item.materialId)?.name}
                         </td>
                         <td className="px-3 py-2 text-sm whitespace-nowrap">
-                          {item.quantity} | <span className="text-amber-500">{item.deliveredQuantity}</span> |{' '}
-                          <span className="text-green-500">{item.inProgressQuantity}</span>
+                          {item.quantity} | <span className="text-green-500">{item.deliveredQuantity}</span>
                         </td>
                         <td className="px-3 py-2 text-sm whitespace-nowrap">{item.rate}</td>
                         <td className="px-3 py-2 text-sm whitespace-nowrap">
                           {item.dueDate ? new Date(item.dueDate * 1000).toLocaleDateString('en-GB') : '-'}
                         </td>
-                        <td className="px-3 py-2 text-sm whitespace-nowrap">{renderStatusBadge(item.status)}</td>
+                        <td className="px-3 py-2 text-sm whitespace-nowrap">
+                          {renderStatusBadge(item.deliveredQuantity >= item.quantity ? 'delivered' : 'pending')}
+                        </td>
                       </tr>
                     ))}
                     <tr key={`section-summary-${sectionIndex}`} className="bg-gray-50">
@@ -196,8 +218,7 @@ export default function DeliveryOrderPage({ params }: IDeliveryOrderPageProps) {
                         {section.district}
                       </td>
                       <td className="px-3 py-2 text-sm whitespace-nowrap font-semibold" colSpan={4}>
-                        {section.totalQuantity} | <span className="text-amber-500">{section.totalDeliveredQuantity}</span> |{' '}
-                        <span className="text-green-500">{section.totalInProgressQuantity}</span>
+                        {section.totalQuantity} | <span className="text-green-500">{section.totalDeliveredQuantity}</span>
                       </td>
                     </tr>
                   </React.Fragment>
