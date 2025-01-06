@@ -29,6 +29,7 @@ export default function Parties() {
         size: size,
         getAll: false,
       }),
+    initialData: [],
   })
 
   if (partiesQuery.isError) {

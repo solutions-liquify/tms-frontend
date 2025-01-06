@@ -32,16 +32,19 @@ export default function Locations() {
         page: page,
         size: size,
       }),
+    initialData: [],
   })
 
   const districtsQuery = useQuery<string[]>({
     queryKey: ['districts'],
     queryFn: () => listDistricts({}),
+    initialData: [],
   })
 
   const talukasQuery = useQuery<string[]>({
     queryKey: ['talukas', selectedDistricts],
     queryFn: () => listTalukas({ districts: selectedDistricts }),
+    initialData: [],
   })
 
   useEffect(() => {

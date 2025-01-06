@@ -28,7 +28,7 @@ export default function TableItemFilter({ selectedItems, setSelectedItems, defau
         <div>
           {defaultItemsList.map((item, idx) => (
             <div
-              className={'flex items-center space-x-2 hover:bg-gray-100 p-2 text-sm cursor-pointer capitalize'}
+              className={'flex items-center space-x-2 hover:bg-gray-100 p-2 text-sm cursor-pointer capitalize overflow-y-auto max-h-[80vh]'}
               key={idx}
               onClick={() => {
                 if (selectedItems.includes(item)) {
