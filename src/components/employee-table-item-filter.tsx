@@ -25,10 +25,10 @@ export default function TableItemFilter({ selectedItems, setSelectedItems, defau
         </Button>
       </PopoverTrigger>
       <PopoverContent className="p-0" align="start">
-        <div>
+        <div className="max-h-[70vh] overflow-y-auto">
           {defaultItemsList.map((item, idx) => (
             <div
-              className={'flex items-center space-x-2 hover:bg-gray-100 p-2 text-sm cursor-pointer capitalize overflow-y-auto max-h-[80vh]'}
+              className={'flex items-center space-x-2 hover:bg-gray-100 p-2 text-sm cursor-pointer capitalize'}
               key={idx}
               onClick={() => {
                 if (selectedItems.includes(item)) {
