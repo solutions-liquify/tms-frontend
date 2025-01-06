@@ -9,7 +9,7 @@ import { useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import EmployeeTableItemFilter from './employee-table-item-filter'
+import TableItemFilter from '@/components/employee-table-item-filter'
 
 export default function Employees() {
   const router = useRouter()
@@ -49,13 +49,8 @@ export default function Employees() {
       <div className="grid sm:grid-cols-4 gap-2">
         <Input placeholder="Search" value={search} onChange={(e) => setSearch(e.target.value)} className="sm:col-span-2" />
 
-        <EmployeeTableItemFilter selectedItems={selectedRoles} setSelectedItems={setSelectedRoles} defaultItemsList={['ADMIN', 'STAFF']} title={'Role'} />
-        <EmployeeTableItemFilter
-          selectedItems={selectedStatuses}
-          setSelectedItems={setSelectedStatuses}
-          defaultItemsList={['active', 'inactive']}
-          title={'Status'}
-        />
+        <TableItemFilter selectedItems={selectedRoles} setSelectedItems={setSelectedRoles} defaultItemsList={['ADMIN', 'STAFF']} title={'Role'} />
+        <TableItemFilter selectedItems={selectedStatuses} setSelectedItems={setSelectedStatuses} defaultItemsList={['active', 'inactive']} title={'Status'} />
       </div>
 
       <div className="my-4" />

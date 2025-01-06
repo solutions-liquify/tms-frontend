@@ -2,14 +2,14 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Button } from '@/components/ui/button'
 import { PlusCircleIcon } from 'lucide-react'
 
-interface IEmployeeTableItemFilter {
+interface ITableItemFilter {
   selectedItems: string[]
   setSelectedItems: (employeeRoles: string[]) => void
   defaultItemsList: string[]
   title: string
 }
 
-export default function EmployeeTableItemFilter({ selectedItems, setSelectedItems, defaultItemsList, title }: IEmployeeTableItemFilter) {
+export default function TableItemFilter({ selectedItems, setSelectedItems, defaultItemsList, title }: ITableItemFilter) {
   return (
     <Popover>
       <PopoverTrigger asChild>

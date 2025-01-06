@@ -18,14 +18,15 @@ export const PartySchema = z.object({
   city: z.string().optional().nullable(),
   pincode: z.string().optional().nullable(),
   createdAt: z.number().optional().nullable(),
+  status: z.string(),
 })
 
 export type TParty = z.infer<typeof PartySchema>
 
 export type ListPartiesInput = {
   search?: string | null
-  states?: string[]
-  districts?: string[]
-  talukas?: string[]
-  cities?: string[]
+  statuses?: string[]
+  page?: number
+  size?: number
+  getAll?: boolean
 }

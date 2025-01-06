@@ -62,7 +62,7 @@ export default function DeliveryOrderForm({ enableEdit, deliveryOrder }: Deliver
 
   const partiesQuery = useQuery<TParty[]>({
     queryKey: ['parties'],
-    queryFn: () => listParties({}),
+    queryFn: () => listParties({ getAll: true }),
     initialData: [],
   })
 

@@ -1,19 +1,17 @@
 'use client'
 
-import { TParty } from '@/schemas/party-schema'
-import { useRouter } from 'next/navigation'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { PartySchema } from '@/schemas/party-schema'
 import { Button } from '@/components/ui/button'
-import { useEffect, useState } from 'react'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Separator } from '@/components/ui/separator'
-import { toast } from 'sonner'
-import { createParty, listCities, listDistricts, listStates, listTalukas, updateParty } from '@/lib/actions'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { activateParty, createParty, deactivateParty, listCities, listDistricts, listStates, listTalukas, updateParty } from '@/lib/actions'
+import { PartySchema, TParty } from '@/schemas/party-schema'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 
 interface PartyFormProps {
   party?: TParty
@@ -28,7 +26,7 @@ export default function PartyForm({ enableEdit, party }: PartyFormProps) {
 
   const form = useForm<TParty>({
     resolver: zodResolver(PartySchema),
-    defaultValues: party ?? {},
+    defaultValues: party ?? { status: 'active' },
   })
 
   const statesQuery = useQuery<string[]>({
@@ -83,6 +81,54 @@ export default function PartyForm({ enableEdit, party }: PartyFormProps) {
       try {
         await queryClient.invalidateQueries({ queryKey: ['parties'] })
         toast.success('Party saved successfully')
+        router.back()
+      } catch (error) {
+        console.log(error)
+        toast.error('Error invalidating cache.')
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    onError: (error) => {
+      setIsLoading(false)
+      console.log(error)
+      toast.error('An error occurred. Please try again later.')
+    },
+  })
+
+  const deactivateMutation = useMutation({
+    mutationFn: async (id: string) => {
+      setIsLoading(true)
+      await deactivateParty(id)
+    },
+    onSuccess: async () => {
+      try {
+        await queryClient.invalidateQueries({ queryKey: ['parties'] })
+        toast.success('Party deactivated successfully')
+        router.back()
+      } catch (error) {
+        console.log(error)
+        toast.error('Error invalidating cache.')
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    onError: (error) => {
+      setIsLoading(false)
+      console.log(error)
+      toast.error('An error occurred. Please try again later.')
+    },
+  })
+
+  const activateMutation = useMutation({
+    mutationFn: async (id: string) => {
+      setIsLoading(true)
+      await activateParty(id)
+    },
+    onSuccess: async () => {
+      try {
+        await queryClient.invalidateQueries({ queryKey: ['parties'] })
+        toast.success('Party activated successfully')
         router.back()
       } catch (error) {
         console.log(error)
@@ -344,6 +390,26 @@ export default function PartyForm({ enableEdit, party }: PartyFormProps) {
               )}
             />
           </div>
+
+          <div className="my-4" />
+
+          {editMode && party && party?.id && party?.status === 'active' && (
+            <Button variant="destructive" disabled={isLoading} onClick={() => deactivateMutation.mutateAsync(party?.id ?? '')}>
+              Delete Party
+            </Button>
+          )}
+
+          {party && party?.status === 'inactive' && <p className="text-muted-foreground text-red-500 my-4 text-sm">This party is deactivated.</p>}
+
+          {editMode && party && party?.id && party?.status === 'inactive' && (
+            <Button
+              disabled={isLoading}
+              onClick={() => activateMutation.mutateAsync(party?.id ?? '')}
+              className="bg-green-100 hover:bg-green-400 text-green-800"
+            >
+              Activate Party
+            </Button>
+          )}
         </form>
       </Form>
     </div>
