@@ -56,7 +56,7 @@ export default function DeliveryChallans() {
         <TableBody>
           {deliveryChallansQuery.data?.map((deliveryChallan, index) => (
             <TableRow key={deliveryChallan.id} onClick={() => router.push(`/portal/delivery-challans/${deliveryChallan.id}`)} className="cursor-pointer">
-              <TableCell>{index + 1}</TableCell>
+              <TableCell>{index + 1 + (page - 1) * size}</TableCell>
               <TableCell>{deliveryChallan.deliveryOrderId}</TableCell>
               <TableCell>{deliveryChallan.partyName}</TableCell>
               <TableCell>{deliveryChallan.totalDeliveringQuantity}</TableCell>

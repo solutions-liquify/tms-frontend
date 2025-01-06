@@ -19,4 +19,7 @@ export type TEmployee = z.infer<typeof EmployeeSchema>
 export type ListEmployeesInput = {
   search?: string | null
   roles?: string[] | null
+  statuses?: string[] | null
+  page?: number | null
+  size?: number | null
 }
