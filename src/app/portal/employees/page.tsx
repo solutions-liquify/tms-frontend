@@ -53,7 +53,7 @@ export default function Employees() {
         <EmployeeTableItemFilter
           selectedItems={selectedStatuses}
           setSelectedItems={setSelectedStatuses}
-          defaultItemsList={['ACTIVE', 'INACTIVE']}
+          defaultItemsList={['active', 'inactive']}
           title={'Status'}
         />
       </div>
