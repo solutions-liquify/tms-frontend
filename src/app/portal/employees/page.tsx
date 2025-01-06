@@ -17,7 +17,7 @@ export default function Employees() {
   const [selectedRoles, setSelectedRoles] = useState<string[]>([])
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([])
   const [page, setPage] = useState(1)
-  const [size, setSize] = useState(5)
+  const [size, setSize] = useState(10)
 
   const employeesQuery = useQuery<TEmployee[]>({
     queryKey: ['employees', search, selectedRoles, selectedStatuses, page, size],
