@@ -27,7 +27,7 @@ export default function LocationForm({ enableEdit, location }: LocationFormProps
 
   const form = useForm<TLocation>({
     resolver: zodResolver(LocationSchema),
-    defaultValues: location ?? {},
+    defaultValues: location ?? { status: 'active' },
   })
 
   const statesQuery = useQuery<string[]>({

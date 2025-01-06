@@ -18,14 +18,19 @@ export const LocationSchema = z.object({
   city: z.string().optional().nullable(),
   pincode: z.string().optional().nullable(),
   createdAt: z.number().optional().nullable(),
+  status: z.string(),
 })
 
 export type TLocation = z.infer<typeof LocationSchema>
 
 export type ListLocationsInput = {
   search?: string | null
-  state?: string | null
-  district?: string | null
-  taluka?: string | null
-  city?: string | null
+  states?: string[]
+  districts?: string[]
+  talukas?: string[]
+  cities?: string[]
+  statuses?: string[]
+  getAll?: boolean
+  page?: number
+  size?: number
 }
