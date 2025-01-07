@@ -1,18 +1,15 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useQuery } from '@tanstack/react-query'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { listMaterials } from '@/lib/actions'
 import { TMaterial } from '@/schemas/material-schema'
-import { useState } from 'react'
-import { Separator } from '@/components/ui/separator'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { useQuery } from '@tanstack/react-query'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 export default function Materials() {
   const router = useRouter()
-  const [search, setSearch] = useState<string>('')
 
   const materialsQuery = useQuery<TMaterial[]>({
     queryKey: ['materials'],

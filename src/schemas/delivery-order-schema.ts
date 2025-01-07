@@ -40,17 +40,21 @@ export type TDeliveryOrderItem = z.infer<typeof DeliveryOrderItemSchema>
 export type ListDeliveryOrdersInput = {
   search?: string | null
   page?: number
-  pageSize?: number
+  size?: number
   statuses?: string[] | null
   partyIds?: string[] | null
+  fromDate?: number | null
+  toDate?: number | null
 }
 
-export type ListDeliveryOrderItem = {
+export type DeliveryOrderRecord = {
   id: string
   contractId: string
   partyName: string
   status: string
   grandTotalQuantity: number
+  grandTotalDeliveredQuantity: number
+  dateOfContract: number | null
 }
 
 export type TDeliverOrderItemMetadata = {

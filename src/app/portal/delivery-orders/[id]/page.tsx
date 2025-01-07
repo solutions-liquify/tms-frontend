@@ -14,6 +14,7 @@ import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
+import StatusBadge from '@/components/status-badge'
 
 interface IDeliveryOrderPageProps {
   params: Promise<{
@@ -87,16 +88,6 @@ export default function DeliveryOrderPage({ params }: IDeliveryOrderPageProps) {
     return <div>Error loading delivery order. Please try again later.</div>
   }
 
-  const renderStatusBadge = (status: string) => {
-    let badgeColor = 'bg-gray-100 text-gray-800' // Default gray for unknown status
-    if (status === 'delivered') {
-      badgeColor = 'bg-green-100 text-green-800 hover:bg-green-200'
-    } else if (status === 'pending') {
-      badgeColor = 'bg-amber-100 text-amber-800 hover:bg-amber-200'
-    }
-    return <Badge className={cn(badgeColor, 'cursor-pointer capitalize')}>{status}</Badge>
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center mb-4">
@@ -116,7 +107,7 @@ export default function DeliveryOrderPage({ params }: IDeliveryOrderPageProps) {
             <div className="space-y-3">
               <div className="flex space-x-2">
                 <p className="text-sm font-medium text-gray-600">DO Number:</p>
-                <p className="text-sm">{deliveryOrderQuery.data?.id?.slice(0, 4)}...</p>
+                <p className="text-sm">{deliveryOrderQuery.data?.id}</p>
               </div>
               <div className="flex space-x-2">
                 <p className="text-sm font-medium text-gray-600">Client Contract Number:</p>
@@ -208,7 +199,7 @@ export default function DeliveryOrderPage({ params }: IDeliveryOrderPageProps) {
                           {item.dueDate ? new Date(item.dueDate * 1000).toLocaleDateString('en-GB') : '-'}
                         </td>
                         <td className="px-3 py-2 text-sm whitespace-nowrap">
-                          {renderStatusBadge(item.deliveredQuantity >= item.quantity ? 'delivered' : 'pending')}
+                          <StatusBadge status={item.deliveredQuantity >= item.quantity ? 'delivered' : 'pending'} />
                         </td>
                       </tr>
                     ))}
@@ -257,7 +248,9 @@ export default function DeliveryOrderPage({ params }: IDeliveryOrderPageProps) {
                       {challan.dateOfChallan ? new Date(challan.dateOfChallan * 1000).toLocaleDateString('en-GB') : '-'}
                     </td>
                     <td className="px-3 py-2 text-sm whitespace-nowrap">{challan.totalDeliveringQuantity || 0}</td>
-                    <td className="px-3 py-2 text-sm whitespace-nowrap">{renderStatusBadge(challan.status)}</td>
+                    <td className="px-3 py-2 text-sm whitespace-nowrap">
+                      <StatusBadge status={challan.status} />
+                    </td>
                   </tr>
                 ))}
               </tbody>

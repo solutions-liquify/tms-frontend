@@ -9,7 +9,7 @@ import { useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import TableItemFilter from '@/components/employee-table-item-filter'
+import TableItemFilter from '@/components/table-item-filter'
 
 export default function Employees() {
   const router = useRouter()

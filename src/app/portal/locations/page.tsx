@@ -1,6 +1,6 @@
 'use client'
 
-import TableItemFilter from '@/components/employee-table-item-filter'
+import TableItemFilter from '@/components/table-item-filter'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
