@@ -107,7 +107,9 @@ export default function DeliveryOrders() {
               <TableCell>{deliveryOrder.id}</TableCell>
               <TableCell>{deliveryOrder.contractId}</TableCell>
               <TableCell>{deliveryOrder.partyName}</TableCell>
-              <TableCell>{deliveryOrder.grandTotalQuantity}</TableCell>
+              <TableCell>
+                {deliveryOrder.grandTotalQuantity} |<span className="text-green-500"> {deliveryOrder.grandTotalDeliveredQuantity}</span>
+              </TableCell>
               <TableCell>{deliveryOrder.dateOfContract ? new Date(deliveryOrder.dateOfContract * 1000).toLocaleDateString('en-GB') : ''}</TableCell>
               <TableCell>
                 <StatusBadge status={deliveryOrder.status} />
