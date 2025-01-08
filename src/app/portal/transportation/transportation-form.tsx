@@ -83,9 +83,7 @@ export default function TransportationForm({ enableEdit, transportationCompany }
       try {
         await queryClient.invalidateQueries({ queryKey: ['transportationCompanies', response.id] })
         await queryClient.invalidateQueries({ queryKey: ['transportationCompanies'] })
-        form.reset(response)
-        setEditMode(false)
-        window.location.reload()
+        router.back()
         toast.success('Transportation Company saved successfully')
       } catch (error) {
         console.log(error)
@@ -157,6 +155,21 @@ export default function TransportationForm({ enableEdit, transportationCompany }
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="pointOfContact"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Point of Contact</FormLabel>
+                  <FormControl>
+                    <Input {...field} value={field.value ?? ''} disabled={isLoading || !editMode || transportationCompany?.status === 'inactive'} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="contactNumber"

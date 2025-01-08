@@ -26,6 +26,7 @@ export default function TransportationCompanies() {
         statuses: selectedStatuses,
         page: page,
         size: size,
+        getAll: false,
       }),
   })
 
