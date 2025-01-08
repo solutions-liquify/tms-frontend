@@ -5,7 +5,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
-import { createTransportationCompany, listCities, listStates, updateTransportationCompany } from '@/lib/actions'
+import { createTransportationCompany, downloadFile, listCities, listStates, updateTransportationCompany, uploadFile } from '@/lib/actions'
 import { TransportationCompanySchema, TTransportationCompany } from '@/schemas/transportation-company-schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -25,6 +25,7 @@ export default function TransportationForm({ enableEdit, transportationCompany }
   const queryClient = useQueryClient()
   const [isLoading, setIsLoading] = useState(false)
   const [editMode, setEditMode] = useState(enableEdit)
+  const [fileLoading, setFileLoading] = useState(false)
 
   const form = useForm<TTransportationCompany>({
     resolver: zodResolver(TransportationCompanySchema),
@@ -99,6 +100,39 @@ export default function TransportationForm({ enableEdit, transportationCompany }
     },
   })
 
+  const uploadFileMutation = useMutation({
+    mutationFn: async (file: File) => {
+      setFileLoading(true)
+      const response = await uploadFile(file)
+      return response
+    },
+    onSuccess: () => {
+      toast.success('File uploaded successfully')
+      setFileLoading(false)
+    },
+    onError: (error) => {
+      console.log(error)
+      toast.error('An error occurred during file upload. Please try again later.')
+      setFileLoading(false)
+    },
+  })
+
+  const downloadFileMutation = useMutation({
+    mutationFn: async (fileId: string) => {
+      setFileLoading(true)
+      await downloadFile(fileId)
+    },
+    onSuccess: () => {
+      toast.success('File downloaded successfully')
+      setFileLoading(false)
+    },
+    onError: (error) => {
+      console.log(error)
+      toast.error('An error occurred during file download. Please try again later.')
+      setFileLoading(false)
+    },
+  })
+
   const onSubmit = (data: TTransportationCompany) => {
     mutation.mutate(data)
   }
@@ -107,12 +141,12 @@ export default function TransportationForm({ enableEdit, transportationCompany }
     console.log(errors)
   }
 
-  if (statesQuery.isLoading || citiesQuery.isLoading) {
-    return <div>Loading...</div>
-  }
-
   if (statesQuery.isError || citiesQuery.isError) {
     return <div>Error loading data. Please try again later.</div>
+  }
+
+  if (fileLoading) {
+    return <div>File Loading...</div>
   }
 
   return (
@@ -371,11 +405,40 @@ export default function TransportationForm({ enableEdit, transportationCompany }
                       </td>
                       <td className="p-2 whitespace-nowrap text-sm text-right">
                         <div className="flex space-x-2 items-center justify-center">
-                          {!field.rcBookUrl && editMode && (
-                            <Button type="button" size="sm" variant="outline">
+                          {!form.watch(`vehicles.${index}.rcBookUrl`) && editMode && (
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="outline"
+                              onClick={async () => {
+                                const fileInput = document.createElement('input')
+                                fileInput.type = 'file'
+                                fileInput.onchange = async (event) => {
+                                  const file = (event.target as HTMLInputElement).files?.[0]
+                                  if (file) {
+                                    const response = await uploadFileMutation.mutateAsync(file)
+                                    form.setValue(`vehicles.${index}.rcBookUrl`, response.publicId)
+                                    toast.success('File uploaded successfully')
+                                  }
+                                }
+                                fileInput.click()
+                              }}
+                            >
                               Upload RC
                             </Button>
                           )}
+
+                          {form.watch(`vehicles.${index}.rcBookUrl`) && (
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="outline"
+                              onClick={() => downloadFileMutation.mutate(form.watch(`vehicles.${index}.rcBookUrl`) as string)}
+                            >
+                              Download RC
+                            </Button>
+                          )}
+
                           {editMode && (
                             <Button type="button" size="icon" variant="ghost" onClick={() => removeVehicle(index)}>
                               <TrashIcon className="h-4 w-4 text-red-600 hover:text-red-900" />

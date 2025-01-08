@@ -429,3 +429,56 @@ export const listTransportationCompanies = async (data: ListTransportationCompan
   })
   return response.data
 }
+
+export const uploadFile = async (file: File) => {
+  const accessToken = await authService.getAccessToken()
+  const formData = new FormData()
+  formData.append('file', file)
+
+  const response = await axios.post(`${getBackendUrl()}/api/v1/files/upload`, formData, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'multipart/form-data',
+    },
+  })
+
+  if (response.status !== 200) {
+    throw new Error('Failed to upload file')
+  }
+
+  return response.data
+}
+
+export const downloadFile = async (publicId: string) => {
+  const accessToken = await authService.getAccessToken()
+  try {
+    const response = await axios.get(`${getBackendUrl()}/api/v1/files/download/${publicId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      responseType: 'arraybuffer',
+    })
+
+    if (response.status !== 200) {
+      throw new Error('Failed to download file')
+    }
+
+    const uploadDetails = await axios.get(`${getBackendUrl()}/api/v1/files/uploadDetails/${publicId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    const fileExtension = uploadDetails.data.fileExtension
+    const originalFilename = uploadDetails.data.originalFilename || publicId
+
+    const url = window.URL.createObjectURL(new Blob([response.data]))
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', `${originalFilename}.${fileExtension}`)
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+  } catch (error: any) {
+    throw new Error(`Failed to download file : ${error.message}`)
+  }
+}
