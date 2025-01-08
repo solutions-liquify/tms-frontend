@@ -7,12 +7,12 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { listDeliveryOrderItemsForDeliveryOrderId, listTransportationCompanies, updateDeliveryChallan } from '@/lib/actions'
+import { downloadFile, listDeliveryOrderItemsForDeliveryOrderId, listTransportationCompanies, updateDeliveryChallan } from '@/lib/actions'
 import { DeliveryChallanSchema, TDeliveryChallan, TDeliveryChallanItem } from '@/schemas/delivery-challan-schema'
 import { TDeliverOrderItemMetadata } from '@/schemas/delivery-order-schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { CircleAlert, Trash2Icon } from 'lucide-react'
+import { CircleAlert, DownloadIcon, Trash2Icon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { FieldErrors, useFieldArray, useForm } from 'react-hook-form'
@@ -32,7 +32,7 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
   const [isSelectDeliveryOrderItemOpen, setIsSelectDeliveryOrderItemOpen] = useState(false)
   const [vehiclesToSelect, setVehiclesToSelect] = useState<TVehicle[]>([])
   const [driversToSelect, setDriversToSelect] = useState<TDriver[]>([])
-
+  const [fileLoading, setFileLoading] = useState(false)
   const queryClient = useQueryClient()
   const router = useRouter()
 
@@ -111,6 +111,22 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
       setIsLoading(false)
       console.log(error)
       toast.error('Error saving delivery challan.')
+    },
+  })
+
+  const downloadFileMutation = useMutation({
+    mutationFn: async (fileId: string) => {
+      setFileLoading(true)
+      await downloadFile(fileId)
+    },
+    onSuccess: () => {
+      toast.success('File downloaded successfully')
+      setFileLoading(false)
+    },
+    onError: (error) => {
+      console.log(error)
+      toast.error('An error occurred during file download. Please try again later.')
+      setFileLoading(false)
     },
   })
 
@@ -413,7 +429,11 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
             name="transportationCompanyId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Transportation Company</FormLabel>
+                <FormLabel>
+                  <div className="flex items-center space-x-2">
+                    <p>Transportation Company</p>
+                  </div>
+                </FormLabel>
                 <FormControl>
                   <Select
                     {...field}
@@ -448,7 +468,19 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
             render={({ field }) => {
               return (
                 <FormItem>
-                  <FormLabel>Vehicle</FormLabel>
+                  <div className="flex items-center space-x-2">
+                    <FormLabel>Vehicle</FormLabel>
+
+                    <DownloadIcon
+                      className="w-4 h-4 cursor-pointer hover:text-blue-500"
+                      onClick={() => {
+                        const selectedVehicle = vehiclesToSelect.find((vehicle) => vehicle.id === field.value)
+                        if (selectedVehicle?.rcBookUrl) {
+                          downloadFileMutation.mutate(selectedVehicle.rcBookUrl)
+                        }
+                      }}
+                    />
+                  </div>
                   <FormControl>
                     <Select {...field} disabled={isLoading || !editMode || !vehiclesToSelect.length} onValueChange={field.onChange} value={field.value ?? ''}>
                       <SelectTrigger>
@@ -474,7 +506,20 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
             name="driverId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Driver</FormLabel>
+                <div className="flex items-center space-x-2">
+                  <FormLabel>Driver</FormLabel>
+                  <DownloadIcon
+                    className="w-4 h-4 cursor-pointer hover:text-blue-500"
+                    onClick={() => {
+                      const selectedDriver = driversToSelect.find((driver) => driver.id === field.value)
+                      if (selectedDriver?.drivingLicenseUrl) {
+                        downloadFileMutation.mutate(selectedDriver.drivingLicenseUrl)
+                      } else {
+                        toast.error('No file has been uploaded yet.')
+                      }
+                    }}
+                  />
+                </div>
                 <FormControl>
                   <Select {...field} disabled={isLoading || !editMode || !driversToSelect.length} onValueChange={field.onChange} value={field.value ?? ''}>
                     <SelectTrigger>
