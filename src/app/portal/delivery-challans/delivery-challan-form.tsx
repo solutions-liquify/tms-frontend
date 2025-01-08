@@ -480,6 +480,13 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
                     <SelectTrigger>
                       <SelectValue placeholder="Select a driver" />
                     </SelectTrigger>
+                    <SelectContent>
+                      {driversToSelect.map((driver) => (
+                        <SelectItem key={driver.id} value={driver.id ?? ''}>
+                          {driver.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
                   </Select>
                 </FormControl>
               </FormItem>
