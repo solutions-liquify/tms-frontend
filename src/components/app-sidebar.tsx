@@ -1,6 +1,6 @@
 'use client'
 
-import { GalleryVerticalEnd, Home, MapPin, Package, Package2, User, Users2, LogOut, BookText } from 'lucide-react'
+import { GalleryVerticalEnd, Home, MapPin, Package, Package2, User, Users2, LogOut, BookText, Truck } from 'lucide-react'
 import Link from 'next/link'
 import { redirect, usePathname } from 'next/navigation'
 import {
@@ -48,6 +48,11 @@ export const metaDataItems = [
     title: 'Parties',
     url: '/portal/parties',
     icon: Users2,
+  },
+  {
+    title: 'Transportation',
+    url: '/portal/transportation',
+    icon: Truck,
   },
   {
     title: 'Materials',

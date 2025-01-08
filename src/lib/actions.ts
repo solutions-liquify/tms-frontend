@@ -10,6 +10,7 @@ import { TLogin } from '@/schemas/auth-schema'
 import { authService } from '@/lib/auth'
 import { ListDeliveryOrdersInput, TDeliveryOrder } from '@/schemas/delivery-order-schema'
 import { ListDeliveryChallansInput, TDeliveryChallan } from '@/schemas/delivery-challan-schema'
+import { TTransportationCompany } from '@/schemas/transportation-company-schema'
 
 // Godown Location API
 export const createLocation = async (data: TLocation) => {
@@ -381,6 +382,37 @@ export const listDeliveryChallans = async (data: ListDeliveryChallansInput) => {
 export const listDeliveryOrderItemsForDeliveryOrderId = async (deliveryOrderId: string) => {
   const accessToken = await authService.getAccessToken()
   const response = await axios.get(`${getBackendUrl()}/api/v1/delivery-orders/list/delivery-order-items/${deliveryOrderId}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
+  return response.data
+}
+
+// Transportation Company API
+export const createTransportationCompany = async (data: TTransportationCompany) => {
+  const accessToken = await authService.getAccessToken()
+  const response = await axios.post(`${getBackendUrl()}/api/v1/transportation-companies/create`, data, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
+  return response.data
+}
+
+export const updateTransportationCompany = async (data: TTransportationCompany) => {
+  const accessToken = await authService.getAccessToken()
+  const response = await axios.post(`${getBackendUrl()}/api/v1/transportation-companies/update`, data, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
+  return response.data
+}
+
+export const getTransportationCompany = async (id: string) => {
+  const accessToken = await authService.getAccessToken()
+  const response = await axios.get(`${getBackendUrl()}/api/v1/transportation-companies/get/${id}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },

@@ -61,8 +61,21 @@ export default function DeliveryOrders() {
 
       <div className="my-4" />
 
-      <div className="grid sm:grid-cols-4 gap-2">
-        <Input placeholder="Search" value={search} onChange={(e) => setSearch(e.target.value)} className="sm:col-span-4" />
+      <div className="grid sm:grid-cols-4 gap-4">
+        <Input placeholder="Search" value={search} onChange={(e) => setSearch(e.target.value)} className="sm:col-span-3" />
+
+        <p
+          className="text-xs text-muted-foreground my-2 hover:cursor-pointer hover:underline"
+          onClick={() => {
+            setSearch('')
+            setSelectedPartyIds([])
+            setSelectedStatuses([])
+            setFromDate(null)
+            setToDate(null)
+          }}
+        >
+          Reset filters
+        </p>
 
         <TableItemFilter
           selectedItems={selectedStatuses}
@@ -88,36 +101,42 @@ export default function DeliveryOrders() {
 
       <div className="my-4" />
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Sr. No.</TableHead>
-            <TableHead>DO ID</TableHead>
-            <TableHead>Contract ID</TableHead>
-            <TableHead>Party</TableHead>
-            <TableHead>Quantity</TableHead>
-            <TableHead>Date of Contract</TableHead>
-            <TableHead>Status</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {deliveryOrdersQuery.data?.map((deliveryOrder, index) => (
-            <TableRow key={deliveryOrder.id} onClick={() => router.push(`/portal/delivery-orders/${deliveryOrder.id}`)} className="cursor-pointer">
-              <TableCell>{index + 1}</TableCell>
-              <TableCell>{deliveryOrder.id}</TableCell>
-              <TableCell>{deliveryOrder.contractId}</TableCell>
-              <TableCell>{deliveryOrder.partyName}</TableCell>
-              <TableCell>
-                {deliveryOrder.grandTotalQuantity} |<span className="text-green-500"> {deliveryOrder.grandTotalDeliveredQuantity}</span>
-              </TableCell>
-              <TableCell>{deliveryOrder.dateOfContract ? new Date(deliveryOrder.dateOfContract * 1000).toLocaleDateString('en-GB') : ''}</TableCell>
-              <TableCell>
-                <StatusBadge status={deliveryOrder.status} />
-              </TableCell>
+      {deliveryOrdersQuery.isLoading ? (
+        <div className="flex justify-center items-center">
+          <p>Loading...</p>
+        </div>
+      ) : (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Sr. No.</TableHead>
+              <TableHead>DO ID</TableHead>
+              <TableHead>Contract ID</TableHead>
+              <TableHead>Party</TableHead>
+              <TableHead>Quantity</TableHead>
+              <TableHead>Date of Contract</TableHead>
+              <TableHead>Status</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {deliveryOrdersQuery.data?.map((deliveryOrder, index) => (
+              <TableRow key={deliveryOrder.id} onClick={() => router.push(`/portal/delivery-orders/${deliveryOrder.id}`)} className="cursor-pointer">
+                <TableCell>{index + 1}</TableCell>
+                <TableCell>{deliveryOrder.id}</TableCell>
+                <TableCell>{deliveryOrder.contractId}</TableCell>
+                <TableCell>{deliveryOrder.partyName}</TableCell>
+                <TableCell>
+                  {deliveryOrder.grandTotalQuantity} |<span className="text-green-500"> {deliveryOrder.grandTotalDeliveredQuantity}</span>
+                </TableCell>
+                <TableCell>{deliveryOrder.dateOfContract ? new Date(deliveryOrder.dateOfContract * 1000).toLocaleDateString('en-GB') : ''}</TableCell>
+                <TableCell>
+                  <StatusBadge status={deliveryOrder.status} />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
 
       <div className={'my-4 flex justify-end items-center space-x-2'}>
         <Button onClick={() => setPage(page - 1)} size={'sm'} variant={'outline'} disabled={page === 1} className={'disabled:opacity-30'}>

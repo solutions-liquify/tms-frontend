@@ -48,6 +48,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 if (pathname === '/portal/delivery-challans') return 'Delivery Challans List'
                 if (pathname === '/portal/delivery-challans/create') return 'Create Delivery Challan'
                 if (pathname.startsWith('/portal/delivery-challans/')) return 'Delivery Challan'
+                if (pathname === '/portal/transportation') return 'Transportation List'
+                if (pathname === '/portal/transportation/create') return 'Create Transportation'
+                if (pathname.startsWith('/portal/transportation/')) return 'Transportation'
                 return [...items, ...metaDataItems].find((item) => pathname.startsWith(item.url))?.title
               })()}
             </h1>
