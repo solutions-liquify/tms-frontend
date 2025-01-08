@@ -7,7 +7,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { listDeliveryOrderItemsForDeliveryOrderId, updateDeliveryChallan } from '@/lib/actions'
+import { listDeliveryOrderItemsForDeliveryOrderId, listTransportationCompanies, updateDeliveryChallan } from '@/lib/actions'
 import { DeliveryChallanSchema, TDeliveryChallan, TDeliveryChallanItem } from '@/schemas/delivery-challan-schema'
 import { TDeliverOrderItemMetadata } from '@/schemas/delivery-order-schema'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -18,6 +18,8 @@ import { useEffect, useState } from 'react'
 import { FieldErrors, useFieldArray, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { TDriver, TTransportationCompany, TVehicle } from '@/schemas/transportation-company-schema'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 interface DeliveryChallanFormProps {
   deliveryChallan: TDeliveryChallan
@@ -28,6 +30,9 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
   const [isLoading, setIsLoading] = useState(false)
   const [editMode, setEditMode] = useState(enableEdit)
   const [isSelectDeliveryOrderItemOpen, setIsSelectDeliveryOrderItemOpen] = useState(false)
+  const [vehiclesToSelect, setVehiclesToSelect] = useState<TVehicle[]>([])
+  const [driversToSelect, setDriversToSelect] = useState<TDriver[]>([])
+
   const queryClient = useQueryClient()
   const router = useRouter()
 
@@ -51,6 +56,12 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
     initialData: [],
   })
 
+  const transportationCompaniesQuery = useQuery<TTransportationCompany[]>({
+    queryKey: ['transportationCompanies'],
+    queryFn: () => listTransportationCompanies({ getAll: true }),
+    initialData: [],
+  })
+
   useEffect(() => {
     const initialTotalDeliveringQuantity = form.getValues('deliveryChallanItems').reduce((acc, item) => acc + (item?.deliveringQuantity || 0), 0) || 0
     form.setValue('totalDeliveringQuantity', initialTotalDeliveringQuantity, { shouldValidate: true, shouldDirty: true })
@@ -63,6 +74,16 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
     })
     return () => subscription.unsubscribe()
   }, [form])
+
+  useEffect(() => {
+    const transportationCompanyId = form.getValues('transportationCompanyId')
+    if (transportationCompanyId && transportationCompaniesQuery.data) {
+      const vehicles = transportationCompaniesQuery.data.find((company) => company.id === transportationCompanyId)?.vehicles
+      const drivers = transportationCompaniesQuery.data.find((company) => company.id === transportationCompanyId)?.drivers
+      setVehiclesToSelect(vehicles ?? [])
+      setDriversToSelect(drivers ?? [])
+    }
+  }, [transportationCompaniesQuery.data, form.getValues('transportationCompanyId')])
 
   const deliveryChallanMutation = useMutation({
     mutationFn: async (data: TDeliveryChallan) => {
@@ -377,6 +398,94 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
             </TableRow>
           </TableBody>
         </Table>
+
+        <Separator className="my-4" />
+
+        <div className="flex justify-between items-center">
+          <p className="font-semibold text-sm text-muted-foreground">Transportation Details</p>
+        </div>
+
+        <div className="my-4" />
+
+        <div className="grid sm:grid-cols-3 grid-cols-1 gap-4">
+          <FormField
+            control={form.control}
+            name="transportationCompanyId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Transportation Company</FormLabel>
+                <FormControl>
+                  <Select
+                    {...field}
+                    disabled={isLoading || !editMode}
+                    onValueChange={(value) => {
+                      field.onChange(value)
+                      form.setValue('vehicleId', null)
+                      form.setValue('driverId', null)
+                    }}
+                    value={field.value ?? ''}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a transportation company" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {transportationCompaniesQuery.data?.map((company) => (
+                        <SelectItem key={company.id} value={company.id ?? ''}>
+                          <span className={company.status === 'inactive' ? 'line-through text-red-500' : ''}>{company.companyName}</span>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="vehicleId"
+            render={({ field }) => {
+              return (
+                <FormItem>
+                  <FormLabel>Vehicle</FormLabel>
+                  <FormControl>
+                    <Select {...field} disabled={isLoading || !editMode || !vehiclesToSelect.length} onValueChange={field.onChange} value={field.value ?? ''}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a vehicle" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {vehiclesToSelect.map((vehicle) => (
+                          <SelectItem key={vehicle.id} value={vehicle.id ?? ''}>
+                            {vehicle.vehicleNumber}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )
+            }}
+          />
+
+          <FormField
+            control={form.control}
+            name="driverId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Driver</FormLabel>
+                <FormControl>
+                  <Select {...field} disabled={isLoading || !editMode || !driversToSelect.length} onValueChange={field.onChange} value={field.value ?? ''}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a driver" />
+                    </SelectTrigger>
+                  </Select>
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        </div>
       </form>
     </Form>
   )

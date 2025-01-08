@@ -24,6 +24,9 @@ export const DeliveryChallanSchema = z.object({
   totalDeliveringQuantity: z.number().default(0.0),
   createdAt: z.number().optional().nullable(),
   updatedAt: z.number().optional().nullable(),
+  transportationCompanyId: z.string().optional().nullable(),
+  vehicleId: z.string().optional().nullable(),
+  driverId: z.string().optional().nullable(),
   deliveryChallanItems: z.array(DeliveryChallanItemSchema).default([]),
 })
 
