@@ -5,11 +5,12 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { getDeliveryOrder, getParty, listDeliveryChallans, listLocations, listMaterials } from '@/lib/actions'
-import { ListDeliveryChallanOutputRecord } from '@/schemas/delivery-challan-schema'
-import { TDeliveryOrder } from '@/schemas/delivery-order-schema'
+import { DeliveryChallanOutputRecord } from '@/schemas/delivery-challan-schema'
+import { TAssociatedDeliverChallanItemMetadata, TDeliveryOrder } from '@/schemas/delivery-order-schema'
 import { TLocation } from '@/schemas/location-schema'
 import { TMaterial } from '@/schemas/material-schema'
 import { TParty } from '@/schemas/party-schema'
+import Link from 'next/link'
 import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import React from 'react'
@@ -69,7 +70,7 @@ export default function DeliveryOrderPage({ params }: IDeliveryOrderPageProps) {
     initialData: [],
   })
 
-  const deliveryChallansQuery = useQuery<ListDeliveryChallanOutputRecord[]>({
+  const deliveryChallansQuery = useQuery<DeliveryChallanOutputRecord[]>({
     queryKey: ['deliveryChallans', deliveryOrderQuery?.data?.id],
     queryFn: () =>
       listDeliveryChallans({
@@ -164,14 +165,15 @@ export default function DeliveryOrderPage({ params }: IDeliveryOrderPageProps) {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/12">#</th>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-2/12">Taluka</th>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-2/12">Location</th>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/12">Material</th>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-2/12">Quantity</th>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/12">Rate</th>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-2/12">Due Date</th>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/12">Status</th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Taluka</th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Material</th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rate</th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">DC</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -199,6 +201,15 @@ export default function DeliveryOrderPage({ params }: IDeliveryOrderPageProps) {
                         <td className="px-3 py-2 text-sm whitespace-nowrap">
                           <StatusBadge status={item.deliveredQuantity >= item.quantity ? 'delivered' : 'pending'} />
                         </td>
+                        <td className="px-3 py-2 text-sm whitespace-nowrap">
+                          {item.associatedDeliveryChallanItems?.map((metadata: TAssociatedDeliverChallanItemMetadata) => (
+                            <div key={metadata.id}>
+                              <Link href={`/portal/delivery-challans/${metadata.deliveryChallanId}`} className="hover:text-blue-500 hover:underline text-xs">
+                                {metadata.deliveryChallanId} <span className="text-green-500">({metadata.deliveringQuantity})</span>
+                              </Link>
+                            </div>
+                          ))}
+                        </td>
                       </tr>
                     ))}
                     <tr key={`section-summary-${sectionIndex}`} className="bg-gray-50">
@@ -206,7 +217,7 @@ export default function DeliveryOrderPage({ params }: IDeliveryOrderPageProps) {
                       <td colSpan={3} className="px-3 py-2 text-sm whitespace-nowrap font-semibold">
                         {section.district}
                       </td>
-                      <td className="px-3 py-2 text-sm whitespace-nowrap font-semibold" colSpan={4}>
+                      <td className="px-3 py-2 text-sm whitespace-nowrap font-semibold" colSpan={5}>
                         {section.totalQuantity} | <span className="text-green-500">{section.totalDeliveredQuantity}</span>
                       </td>
                     </tr>
@@ -234,6 +245,8 @@ export default function DeliveryOrderPage({ params }: IDeliveryOrderPageProps) {
                   <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
                   <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                   <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transportation</th>
+                  {/* <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Driver</th> */}
                   <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                 </tr>
               </thead>
@@ -246,6 +259,8 @@ export default function DeliveryOrderPage({ params }: IDeliveryOrderPageProps) {
                       {challan.dateOfChallan ? new Date(challan.dateOfChallan * 1000).toLocaleDateString('en-GB') : '-'}
                     </td>
                     <td className="px-3 py-2 text-sm whitespace-nowrap">{challan.totalDeliveringQuantity || 0}</td>
+                    <td className="px-3 py-2 text-sm whitespace-nowrap">{challan.transportationCompanyName}</td>
+                    {/* <td className="px-3 py-2 text-sm whitespace-nowrap">{challan.driverName}</td> */}
                     <td className="px-3 py-2 text-sm whitespace-nowrap">
                       <StatusBadge status={challan.status} />
                     </td>

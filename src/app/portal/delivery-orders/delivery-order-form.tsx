@@ -16,7 +16,7 @@ import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { TParty } from '@/schemas/party-schema'
 import DeliveryOrderSection from './delivery-order-section'
-import { ListDeliveryChallanOutputRecord } from '@/schemas/delivery-challan-schema'
+import { DeliveryChallanOutputRecord } from '@/schemas/delivery-challan-schema'
 import { Table, TableCell, TableBody, TableHead, TableRow, TableHeader } from '@/components/ui/table'
 
 interface DeliveryOrderFormProps {
@@ -63,11 +63,12 @@ export default function DeliveryOrderForm({ enableEdit, deliveryOrder }: Deliver
     initialData: [],
   })
 
-  const deliveryChallansQuery = useQuery<ListDeliveryChallanOutputRecord[]>({
+  const deliveryChallansQuery = useQuery<DeliveryChallanOutputRecord[]>({
     queryKey: ['deliveryChallans', deliveryOrder?.id],
     queryFn: () =>
       listDeliveryChallans({
         deliveryOrderIds: [deliveryOrder?.id ?? ''],
+        getAll: true,
       }),
     enabled: !!deliveryOrder?.id,
   })

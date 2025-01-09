@@ -38,13 +38,21 @@ export type ListDeliveryChallansInput = {
   page?: number
   size?: number
   deliveryOrderIds?: string[]
+  fromDate?: number | null
+  toDate?: number | null
+  partyIds?: string[] | null
+  transportationCompanyIds?: string[] | null
+  getAll?: boolean
+  statuses?: string[] | null
 }
 
-export type ListDeliveryChallanOutputRecord = {
+export type DeliveryChallanOutputRecord = {
   id: string
   deliveryOrderId: string
   dateOfChallan?: number | null
   status: string
   partyName: string
   totalDeliveringQuantity: number
+  driverName: string
+  transportationCompanyName: string
 }

@@ -1,5 +1,11 @@
 import * as z from 'zod'
 
+export const AssociatedDeliverChallanItemMetadataSchema = z.object({
+  id: z.string(),
+  deliveringQuantity: z.number().default(0.0),
+  deliveryChallanId: z.string(),
+})
+
 export const DeliveryOrderItemSchema = z.object({
   id: z.string().optional().nullable(),
   deliveryOrderId: z.string().optional().nullable(),
@@ -11,6 +17,7 @@ export const DeliveryOrderItemSchema = z.object({
   deliveredQuantity: z.number(),
   rate: z.number().optional().nullable(),
   dueDate: z.number().optional().nullable(),
+  associatedDeliveryChallanItems: z.array(AssociatedDeliverChallanItemMetadataSchema).optional().nullable(),
 })
 
 export const DeliveryOrderSectionSchema = z.object({
@@ -36,6 +43,7 @@ export const DeliveryOrderSchema = z.object({
 export type TDeliveryOrder = z.infer<typeof DeliveryOrderSchema>
 export type TDeliveryOrderSection = z.infer<typeof DeliveryOrderSectionSchema>
 export type TDeliveryOrderItem = z.infer<typeof DeliveryOrderItemSchema>
+export type TAssociatedDeliverChallanItemMetadata = z.infer<typeof AssociatedDeliverChallanItemMetadataSchema>
 
 export type ListDeliveryOrdersInput = {
   search?: string | null
