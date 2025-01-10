@@ -79,3 +79,9 @@ export type TDeliverOrderItemMetadata = {
   deliveredQuantity: number
   inProgressQuantity: number
 }
+
+
+export type ListPendingDeliveryOrderItemInput = {
+  page: number
+  size: number
+}

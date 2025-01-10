@@ -8,7 +8,7 @@ import { TMaterial } from '@/schemas/material-schema'
 import { ListEmployeesInput, TEmployee } from '@/schemas/employee-schema'
 import { TLogin } from '@/schemas/auth-schema'
 import { authService } from '@/lib/auth'
-import { ListDeliveryOrdersInput, TDeliveryOrder } from '@/schemas/delivery-order-schema'
+import { ListDeliveryOrdersInput, ListPendingDeliveryOrderItemInput, TDeliveryOrder } from '@/schemas/delivery-order-schema'
 import { ListDeliveryChallansInput, TDeliveryChallan } from '@/schemas/delivery-challan-schema'
 import { ListTransportationCompaniesInput, TTransportationCompany } from '@/schemas/transportation-company-schema'
 
@@ -491,4 +491,17 @@ export const downloadFile = async (publicId: string) => {
   } catch (error: any) {
     throw new Error(`Failed to download file : ${error.message}`)
   }
+}
+
+// Dashboard API
+
+export const listPendingDeliveryOrderItems = async (data: ListPendingDeliveryOrderItemInput) => {
+  console.log('data', data)
+  const accessToken = await authService.getAccessToken()
+  const response = await axios.post(`${getBackendUrl()}/api/v1/delivery-orders/list/pending-delivery-order-items`, data, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
+  return response.data
 }
