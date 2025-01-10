@@ -12,6 +12,8 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
     badgeColor = 'bg-green-100 text-green-800 hover:bg-green-200'
   } else if (status === 'pending') {
     badgeColor = 'bg-amber-100 text-amber-800 hover:bg-amber-200'
+  } else if (status === 'cancelled') {
+    badgeColor = 'bg-red-100 text-red-800 hover:bg-red-200'
   }
   return <Badge className={cn(badgeColor, 'cursor-pointer capitalize')}>{status}</Badge>
 }

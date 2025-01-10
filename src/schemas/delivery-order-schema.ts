@@ -4,6 +4,7 @@ export const AssociatedDeliverChallanItemMetadataSchema = z.object({
   id: z.string(),
   deliveringQuantity: z.number().default(0.0),
   deliveryChallanId: z.string(),
+  status: z.string(),
 })
 
 export const DeliveryOrderItemSchema = z.object({

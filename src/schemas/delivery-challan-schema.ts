@@ -19,7 +19,7 @@ export const DeliveryChallanSchema = z.object({
   id: z.string().optional().nullable(),
   deliveryOrderId: z.string(),
   dateOfChallan: z.number().optional().nullable(),
-  status: z.string().optional().nullable(),
+  status: z.string(),
   partyName: z.string().optional().nullable(),
   totalDeliveringQuantity: z.number().default(0.0),
   createdAt: z.number().optional().nullable(),

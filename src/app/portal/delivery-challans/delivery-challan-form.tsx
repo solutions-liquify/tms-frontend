@@ -7,7 +7,13 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { downloadFile, listDeliveryOrderItemsForDeliveryOrderId, listTransportationCompanies, updateDeliveryChallan } from '@/lib/actions'
+import {
+  cancelDeliveryChallan,
+  downloadFile,
+  listDeliveryOrderItemsForDeliveryOrderId,
+  listTransportationCompanies,
+  updateDeliveryChallan,
+} from '@/lib/actions'
 import { DeliveryChallanSchema, TDeliveryChallan, TDeliveryChallanItem } from '@/schemas/delivery-challan-schema'
 import { TDeliverOrderItemMetadata } from '@/schemas/delivery-order-schema'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -20,6 +26,7 @@ import { toast } from 'sonner'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { TDriver, TTransportationCompany, TVehicle } from '@/schemas/transportation-company-schema'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import StatusBadge from '@/components/status-badge'
 
 interface DeliveryChallanFormProps {
   deliveryChallan: TDeliveryChallan
@@ -32,7 +39,9 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
   const [isSelectDeliveryOrderItemOpen, setIsSelectDeliveryOrderItemOpen] = useState(false)
   const [vehiclesToSelect, setVehiclesToSelect] = useState<TVehicle[]>([])
   const [driversToSelect, setDriversToSelect] = useState<TDriver[]>([])
+  const [isCancelling, setIsCancelling] = useState(false)
   const [fileLoading, setFileLoading] = useState(false)
+  const [cancelOpen, setCancelOpen] = useState(false)
   const queryClient = useQueryClient()
   const router = useRouter()
 
@@ -130,6 +139,35 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
     },
   })
 
+  const cancelDeliveryChallanMutation = useMutation({
+    mutationFn: async (id: string) => {
+      setIsCancelling(true)
+      const response = await cancelDeliveryChallan(id)
+      await queryClient.invalidateQueries({ queryKey: ['deliveryChallans', id] })
+      return response
+    },
+    onSuccess: async (response) => {
+      try {
+        await queryClient.invalidateQueries({ queryKey: ['deliveryChallans', response.id] })
+        await queryClient.invalidateQueries({ queryKey: ['deliveryOrders'] })
+        form.reset(response)
+        setEditMode(false)
+        window.location.reload()
+        toast.success('Delivery Challan cancelled successfully')
+      } catch (error) {
+        console.log(error)
+        toast.error('Error invalidating cache.')
+      } finally {
+        setIsCancelling(false)
+      }
+    },
+    onError: (error) => {
+      setIsCancelling(false)
+      console.log(error)
+      toast.error('Error cancelling delivery challan.')
+    },
+  })
+
   const onSubmit = (data: TDeliveryChallan) => {
     deliveryChallanMutation.mutate(data)
   }
@@ -175,9 +213,7 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
             <p className="font-semibold text-sm text-muted-foreground">Delivery Challan Details</p>
-            <Badge variant={'outline'} className="capitalize bg-teal-200 text-teal-800">
-              {deliveryChallan.status}
-            </Badge>
+            <StatusBadge status={deliveryChallan.status} />
           </div>
 
           {editMode && (
@@ -192,7 +228,7 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
           )}
 
           {!editMode && (
-            <Button type="button" disabled={isLoading} size="sm" onClick={() => setEditMode(true)}>
+            <Button type="button" disabled={isLoading || form.getValues('status') === 'cancelled'} size="sm" onClick={() => setEditMode(true)}>
               Edit
             </Button>
           )}
@@ -538,6 +574,39 @@ export default function DeliveryChallanForm({ enableEdit, deliveryChallan }: Del
             )}
           />
         </div>
+
+        <Separator className="my-4" />
+
+        {form.getValues('status') === 'delivered' && (
+          <Dialog open={cancelOpen} onOpenChange={setCancelOpen}>
+            <DialogTrigger asChild>
+              <Button variant={'destructive'} size={'sm'} disabled={isCancelling || isLoading}>
+                {isCancelling ? 'Cancelling...' : 'Cancel Delivery Challan'}
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Confirm Cancellation</DialogTitle>
+              </DialogHeader>
+              <p>Are you sure you want to cancel this delivery challan? This action cannot be undone.</p>
+              <DialogFooter>
+                <Button variant="ghost" onClick={() => setCancelOpen(false)}>
+                  No
+                </Button>
+                <Button
+                  variant={'destructive'}
+                  onClick={async () => {
+                    await cancelDeliveryChallanMutation.mutateAsync(deliveryChallan.id!)
+                    setCancelOpen(false)
+                  }}
+                  disabled={isCancelling || isLoading}
+                >
+                  Yes, Cancel
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
       </form>
     </Form>
   )

@@ -205,7 +205,8 @@ export default function DeliveryOrderPage({ params }: IDeliveryOrderPageProps) {
                           {item.associatedDeliveryChallanItems?.map((metadata: TAssociatedDeliverChallanItemMetadata) => (
                             <div key={metadata.id}>
                               <Link href={`/portal/delivery-challans/${metadata.deliveryChallanId}`} className="hover:text-blue-500 hover:underline text-xs">
-                                {metadata.deliveryChallanId} <span className="text-green-500">({metadata.deliveringQuantity})</span>
+                                {metadata.deliveryChallanId}{' '}
+                                <span className={metadata.status === 'delivered' ? 'text-green-500' : 'text-red-500'}>({metadata.deliveringQuantity})</span>
                               </Link>
                             </div>
                           ))}

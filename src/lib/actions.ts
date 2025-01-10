@@ -379,6 +379,16 @@ export const listDeliveryChallans = async (data: ListDeliveryChallansInput) => {
   return response.data
 }
 
+export const cancelDeliveryChallan = async (id: string) => {
+  const accessToken = await authService.getAccessToken()
+  const response = await axios.delete(`${getBackendUrl()}/api/v1/delivery-challans/cancel/${id}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
+  return response.data
+}
+
 export const listDeliveryOrderItemsForDeliveryOrderId = async (deliveryOrderId: string) => {
   const accessToken = await authService.getAccessToken()
   const response = await axios.get(`${getBackendUrl()}/api/v1/delivery-orders/list/delivery-order-items/${deliveryOrderId}`, {
